@@ -1,0 +1,31 @@
+# See https://pre-commit.com for more information
+# See https://pre-commit.com/hooks.html for more hooks
+repos:
+-   repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.4.0
+    hooks:
+    -   id: trailing-whitespace
+    -   id: end-of-file-fixer
+    -   id: check-yaml
+    -   id: check-added-large-files
+
+-   repo: https://github.com/psf/black
+    rev: 23.3.0
+    hooks:
+    - id: black
+
+-   repo: https://github.com/PyCQA/flake8
+    rev: 6.0.0
+    hooks:
+    - id: flake8
+
+-   repo: https://github.com/pre-commit/mirrors-eslint
+    rev: 'v8.42.0'  # Use the sha / tag you want to point at
+    hooks:
+    -   id: eslint
+        additional_dependencies:
+        - eslint@^8.41.0
+        - eslint-config-airbnb-base@^15.0.0
+        - eslint-plugin-import@^2.27.5
+        - eslint-plugin-html@^7.1.0
+        files: \.(js|html)?$  # *.js, *.jsx, *.ts and *.tsx
