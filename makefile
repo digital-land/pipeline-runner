@@ -5,23 +5,6 @@
 server::
 	python -m uvicorn application.app:app --reload --port=8080
 
-# compile scss
-scss::
-	python application/core/compileSass.py './application/assets'
-
-images::
-	rm -R ./application/static/images
-	cp -R ./application/assets/images ./application/static/images
-
-javascripts::
-	rm -R ./application/static/javascripts
-	cp -R ./application/assets/javascripts ./application/static/javascripts
-
-build::
-	make scss
-	make images
-	make javascripts
-
 # build docker image
 
 # =============================

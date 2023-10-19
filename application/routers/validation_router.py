@@ -1,7 +1,7 @@
 from fastapi.templating import Jinja2Templates
 from fastapi import APIRouter, Request, File, UploadFile, Form
 from application.core.utils import getPageApiFromTitle
-from components.validation import validate_endpoint
+from components.validation import validate
 from components import utils
 from components.models.entity import Entity
 import components.plugins.arcgis as arcgis
@@ -60,7 +60,7 @@ async def uploadFile(
     dataRaw = entity.fetch_data_from_csv(userContent)
 
     try:
-        data = validate_endpoint(dataRaw)
+        data = validate(dataRaw)
     except Exception as e:
         # catch file level errors here and render the file level error page
         logger.error("Error validating data: " + e)
