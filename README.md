@@ -1,6 +1,6 @@
-# Pipeline Runner (temporary name)
+# Pipeline Runner API (temporary name)
 
-This repo serves as a way to run the pipeline against a given resource in order to provide validation/information on the data.
+This repo serves as a way to run a given resource through the pipeline in order to provide validation/information on the data.
 
 ## Prerequisites
 - Python 3.8 or above (?)
