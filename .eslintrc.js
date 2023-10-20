@@ -21,7 +21,7 @@ module.exports = {
 	},
 	plugins: [
 		'html',
-		'eslint-plugin-engagement-platform-webapp/preprocessors.js',
+		'pipeline-runner/preprocessors.js',
 	],
 
 }

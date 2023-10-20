@@ -1,11 +1,6 @@
-# Engagement-platform-webapp
+# Pipeline Runner (temporary name)
 
-## Setup
-
-  It is recommended to setup this project using the [engagement-platform](https://github.com/digital-land/engagement-platform) core repo that contains all required repos as submodules
-
-### Prerequisites
-- [engagement-platform-cms](https://github.com/digital-land/engagement-platform-cms)
+This repo serves as a way to run the pipeline against a given resource in order to provide validation/information on the data.
 
 ## Initialisation
 - After cloning this repo, run the following command:
@@ -22,7 +17,7 @@
 ## Adding new dependencies
 - Project dependencies are managed via pip-tools
 - to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.in `
-- Then to compile your requirements file and produce a requirements.txt file run: 
+- Then to compile your requirements file and produce a requirements.txt file run:
     ```
     make piptool-compile
     ```
