@@ -15,7 +15,6 @@ init::
 	python -m pip install pip-tools
 	make piptool-compile
 	make dependencies
-	make npm-dependencies
 	make pre-commit-install
 
 piptool-compile::
@@ -24,9 +23,6 @@ piptool-compile::
 
 dependencies::
 	pip-sync requirements/requirements.txt  requirements/dev-requirements.txt
-
-npm-dependencies::
-	npm i
 
 pre-commit-install::
 	pre-commit install
@@ -67,9 +63,6 @@ test-unit:
 
 test-integration:
 	python -m pytest --md-report --md-report-color=never --md-report-output=integration-tests.md tests/integration
-
-test-e2e:
-	python -m pytest --md-report --md-report-color=never --md-report-output=e2e-tests.md tests/e2e
 
 test-integration-docker:
 	docker-compose run web python -m pytest tests/integration --junitxml=.junitxml/integration.xml $(PYTEST_RUNTIME_ARGS)

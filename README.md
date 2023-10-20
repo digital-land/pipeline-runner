@@ -2,6 +2,17 @@
 
 This repo serves as a way to run the pipeline against a given resource in order to provide validation/information on the data.
 
+## Prerequisites
+- Python 3.8 or above (?)
+- Create a virtual environment using
+    ```
+    python3 -m venv --prompt . .venv --clear --upgrade-deps
+    ```
+  and activate it using
+    ```
+    source .venv/bin/activate
+    ```
+
 ## Initialisation
 - After cloning this repo, run the following command:
     ```
@@ -40,10 +51,6 @@ Testing is done using `pytest` with `playwrite` also being used for the acceptan
 - To run acceptance tests run:
     ```
     make test-acceptance
-    ```
-- To run end to end tests run:
-    ```
-    make test-e2e
     ```
 
 ## Linting
