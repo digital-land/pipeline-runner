@@ -52,7 +52,7 @@ async def dataset_validation_request(
     if not ok:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"test error message {str(err_msg)}",
+            detail={"err_msg": f"test error message {str(err_msg)}"},
         )
 
     # the message is valid so we can continue with the request
