@@ -6,6 +6,11 @@ from jsonschema import validate
 from pathlib import Path
 
 
+class ErrorMap(Enum):
+    USER_ERROR = "User error"
+    SYSTEM_ERROR = "System error"
+
+
 class JSONSchemaMap(Enum):
     API_RESPONSE_ERROR = "api_error_schema.json"
     API_RUN_PIPELINE_REQUEST = "api_run_pipeline_req.json"

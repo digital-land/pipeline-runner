@@ -6,6 +6,7 @@ from application.logging.logger import get_logger
 from application.services.json_schema_svc import (
     JsonSchemaSvc,
     JSONSchemaMap,
+    ErrorMap,
     get_schema_svc,
 )
 
@@ -41,7 +42,10 @@ async def dataset_validation_request(
     except KeyError as err:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"err_msg": f"test error message {str(err)}"},
+            detail={
+                "errType": ErrorMap.USER_ERROR.value,
+                "errMsg": f"Missing required field: {str(err)}",
+            },
         )
 
     # validate the resulting message and reject if invalid
@@ -52,7 +56,7 @@ async def dataset_validation_request(
     if not ok:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"err_msg": f"test error message {str(err_msg)}"},
+            detail={"errType": ErrorMap.USER_ERROR.value, "errMsg": {str(err_msg)}},
         )
 
     # the message is valid so we can continue with the request

@@ -29,7 +29,7 @@ def api_client():
 
 # @pytest.mark.skip(reason="")
 def test_good_validation_request_has_valid_response(api_client: TestClient):
-    endpoint_url = "/api/validate/form/request/"
+    endpoint_url = "/api/validate/form/request/"  # TODO move to module-level
     upload_file = [("upload_file", open("tests/data/json_schemas/dummy.csv", "rb"))]
     form_data = {
         "dataset": "test-dataset",
@@ -73,5 +73,6 @@ def test_bad_validation_request_has_invalid_response(api_client: TestClient):
         )
 
     assert ok is True
-    # assert len(err_msg) != 0
+    assert len(err_msg) == 0
+    assert len(resp_json["detail"]["errMsg"]) > 0
     assert resp.status_code != 200
