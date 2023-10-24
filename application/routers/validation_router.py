@@ -20,7 +20,7 @@ async def validate(request: Request):
     return json.dumps({"status": "200"})
 
 
-@router.post("/form/request")
+@router.post("/file/request/")
 async def dataset_validation_request(
     req: Request, schema_svc: JsonSchemaSvc = Depends(get_schema_svc)
 ):

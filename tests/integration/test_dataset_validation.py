@@ -12,6 +12,8 @@ from application.services.json_schema_svc import (
 
 schema_svc: JsonSchemaSvc = None
 
+VALIDATE_FILE_REQ_URL = "/api/dataset/validate/file/request/"
+
 
 async def json_schema_svc():
     global schema_svc
@@ -29,7 +31,7 @@ def api_client():
 
 # @pytest.mark.skip(reason="")
 def test_good_validation_request_has_valid_response(api_client: TestClient):
-    endpoint_url = "/api/validate/form/request/"  # TODO move to module-level
+    endpoint_url = VALIDATE_FILE_REQ_URL
     upload_file = [("upload_file", open("tests/data/json_schemas/dummy.csv", "rb"))]
     form_data = {
         "dataset": "test-dataset",
@@ -56,7 +58,7 @@ def test_good_validation_request_has_valid_response(api_client: TestClient):
 
 # @pytest.mark.skip(reason="")
 def test_bad_validation_request_has_invalid_response(api_client: TestClient):
-    endpoint_url = "/api/validate/form/request/"
+    endpoint_url = VALIDATE_FILE_REQ_URL
     upload_file = []
     form_data = {}
 
