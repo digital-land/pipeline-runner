@@ -1,21 +1,17 @@
 import json
-from functools import lru_cache
-from pathlib import Path
 
 from fastapi import APIRouter, Request, Depends, status, HTTPException
 
 from application.logging.logger import get_logger
-from application.services.json_schema_svc import JsonSchemaSvc, JSONSchemaMap
+from application.services.json_schema_svc import (
+    JsonSchemaSvc,
+    JSONSchemaMap,
+    get_schema_svc,
+)
 
 logger = get_logger(__name__)
 
 router = APIRouter()
-
-
-@lru_cache
-def get_schema_svc():
-    schema_path = Path("tests/data/json_schemas")
-    return JsonSchemaSvc(schema_dir=schema_path)
 
 
 @router.get("/")

@@ -1,6 +1,7 @@
 import json
 import jsonschema
 from enum import Enum
+from functools import lru_cache
 from jsonschema import validate
 from pathlib import Path
 
@@ -73,3 +74,9 @@ class JsonSchemaSvc:
 
         json_msg_dict = json.loads(json_msg)
         return self.validate_json_dict(json_msg_dict, schema)
+
+
+@lru_cache
+def get_schema_svc():
+    schema_path = Path("tests/data/json_schemas")
+    return JsonSchemaSvc(schema_dir=schema_path)

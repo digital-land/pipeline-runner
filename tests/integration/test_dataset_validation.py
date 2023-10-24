@@ -4,8 +4,11 @@ import pytest
 from fastapi.testclient import TestClient
 
 from application.app import app
-from application.services.json_schema_svc import JsonSchemaSvc, JSONSchemaMap
-from application.routers.validation_router import get_schema_svc
+from application.services.json_schema_svc import (
+    JsonSchemaSvc,
+    JSONSchemaMap,
+    get_schema_svc,
+)
 
 schema_svc: JsonSchemaSvc = None
 
