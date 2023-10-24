@@ -7,3 +7,5 @@ shapely
 jinja2
 python-multipart
 python-dotenv
+pytest
+jsonschema

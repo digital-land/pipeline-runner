@@ -69,6 +69,8 @@ tzdata==2023.3
     # via pandas
 uvicorn==0.22.0
     # via -r requirements/requirements.in
+jsonschema==4.17.3
+    # via -r requirements/requirements.in
 
 # The following packages are considered to be unsafe in a requirements file:
 # setuptools
