@@ -1,4 +1,5 @@
 import json
+
 import jsonschema
 from enum import Enum
 from functools import lru_cache
@@ -60,6 +61,10 @@ class JsonSchemaSvc:
         except FileNotFoundError:
             return False, "Failed to load Schema"
         except jsonschema.exceptions.ValidationError as err:
+            # fix for a bug where property is not populated for
+            # minLength check
+            if "''" in err.message:
+                err.message = err.message.replace("''", err.relative_path[0])
             return False, f"JSON message failed schema validation: {str(err.message)}"
 
         return True, ""
