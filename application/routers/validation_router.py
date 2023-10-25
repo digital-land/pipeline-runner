@@ -9,6 +9,7 @@ from application.services.json_schema_svc import (
     ErrorMap,
     get_schema_svc,
 )
+from datetime import datetime
 
 logger = get_logger(__name__)
 
@@ -31,7 +32,7 @@ async def dataset_validation_request(
             req_msg_dict["dataset"] = form["dataset"]
             req_msg_dict["collection"] = form["collection"]
             req_msg_dict["organization"] = form["organization"]
-            # req_msg_dict["filePath"] = form["upload_file"].filename
+            req_msg_dict["filePath"] = form["upload_file"].filename
 
             # save file contents somewhere accessible to downstream services
             # contents = await form["upload_file"].read()
@@ -43,8 +44,10 @@ async def dataset_validation_request(
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail={
+                "errCode": str(status.HTTP_400_BAD_REQUEST),
                 "errType": ErrorMap.USER_ERROR.value,
                 "errMsg": f"Missing required field: {str(err)}",
+                "errTime": str(datetime.now()),
             },
         )
 
@@ -56,7 +59,12 @@ async def dataset_validation_request(
     if not ok:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail={"errType": ErrorMap.USER_ERROR.value, "errMsg": {str(err_msg)}},
+            detail={
+                "errCode": str(status.HTTP_400_BAD_REQUEST),
+                "errType": ErrorMap.USER_ERROR.value,
+                "errMsg": f"{str(err_msg)}",
+                "errTime": str(datetime.now()),
+            },
         )
 
     # the message is valid so we can continue with the request

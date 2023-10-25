@@ -1,1 +1,27 @@
-{}
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://dummy.schema-url.com",
+    "title": "API Error",
+    "description": "",
+    "type": "object",
+    "properties": {
+        "detail": {
+            "type": "object",
+            "properties": {
+                "errCode": {
+                    "type": "string"
+                },
+                "errType": {
+                    "type": "string"
+                },
+                "errMsg": {
+                    "type": "string"
+                },
+                "errTime": {
+                    "type": "string"
+                }
+            },
+            "required": ["errType", "errMsg", "errCode", "errTime"]
+        }
+    }
+}
