@@ -48,7 +48,7 @@ def api_client():
     return client
 
 
-@pytest.mark.skip(reason="")
+# @pytest.mark.skip(reason="")
 def test_good_validation_request_has_valid_response(api_client: TestClient):
     endpoint_url = VALIDATE_FILE_REQ_URL
     upload_file = [("upload_file", open("tests/data/json_schemas/dummy.csv", "rb"))]
@@ -131,31 +131,3 @@ def test_bad_validation_request_has_invalid_response(
 
     if request.node.name == "test_bad_validation_request_has_invalid_response[6]":
         assert "'dummy.txt' does not match" in resp_json["detail"]["errMsg"]
-
-
-@pytest.mark.skip(reason="")
-def test_bad_file_type_has_invalid_response(api_client: TestClient):
-    endpoint_url = VALIDATE_FILE_REQ_URL
-    upload_file = [("upload_file", open("tests/data/json_schemas/dummy.txt", "rb"))]
-    form_data = {
-        "dataset": "test-dataset",
-        "collection": "test-collection",
-        "organization": "test-organization",
-    }
-
-    resp = api_client.post(url=endpoint_url, data=form_data, files=upload_file)
-    resp_json = resp.json()
-
-    if resp.status_code == 200:
-        ok, err_msg = schema_svc.validate_json_dict(
-            resp_json, JSONSchemaMap.API_RUN_PIPELINE_RESPONSE
-        )
-    else:
-        ok, err_msg = schema_svc.validate_json_dict(
-            resp_json, JSONSchemaMap.API_RESPONSE_ERROR
-        )
-
-    assert ok is True
-    assert len(err_msg) == 0
-    assert len(resp_json["detail"]["errMsg"]) > 0
-    assert resp.status_code != 200
