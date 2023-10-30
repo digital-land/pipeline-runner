@@ -1,6 +1,12 @@
+fastapi
 uvicorn
-flake8
-black
+gunicorn
+httpx
+pandas
+shapely
+jinja2
+python-multipart
+python-dotenv
 pytest
-pytest-md-report
-pre-commit
+jsonschema
+-e git+https://github.com/digital-land/pipeline.git#egg=digital-land

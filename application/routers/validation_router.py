@@ -1,7 +1,7 @@
 import json
 
 from fastapi import APIRouter, Request, Depends, status, HTTPException
-
+import application.core.utils as utils
 from application.logging.logger import get_logger
 from application.services.json_schema_svc import (
     JsonSchemaSvc,
@@ -34,6 +34,8 @@ async def dataset_validation_request(
             req_msg_dict["organization"] = form["organization"]
             req_msg_dict["filePath"] = form["upload_file"].filename
 
+            file = form["upload_file"]
+            utils.save_uploaded_file(file)
             # save file contents somewhere accessible to downstream services
             # contents = await form["upload_file"].read()
 
