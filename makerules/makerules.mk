@@ -17,7 +17,7 @@ CONFIG_URL=https://raw.githubusercontent.com/digital-land/config/main/
 endif
 
 ifeq ($(COLLECTION_NAME),)
-COLLECTION_NAME=$(shell echo "$(REPOSITORY)"|sed 's/-collection$$//')
+COLLECTION_NAME=conservation-area
 endif
 
 ifeq ($(CACHE_DIR),)

@@ -72,6 +72,7 @@ EXPECTATION_DIR = expectations/
 endif
 
 ifeq ($(PIPELINE_CONFIG_FILES),)
+$(info PIPELINE_DIR is $(PIPELINE_DIR))
 PIPELINE_CONFIG_FILES=\
 	$(PIPELINE_DIR)column.csv\
 	$(PIPELINE_DIR)combine.csv\

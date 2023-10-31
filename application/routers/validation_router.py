@@ -10,6 +10,8 @@ from application.services.json_schema_svc import (
     get_schema_svc,
 )
 from datetime import datetime
+import application.core.pipeline as pipeline
+
 
 logger = get_logger(__name__)
 
@@ -33,14 +35,11 @@ async def dataset_validation_request(
             req_msg_dict["collection"] = form["collection"]
             req_msg_dict["organization"] = form["organization"]
             req_msg_dict["filePath"] = form["upload_file"].filename
-
             file = form["upload_file"]
+            dataset = form["dataset"]
+            organisation = form["organization"]
+            # save the uploaded file
             utils.save_uploaded_file(file)
-            # save file contents somewhere accessible to downstream services
-            # contents = await form["upload_file"].read()
-
-            # put the filepath of the saved file into the req_msg_dict
-            # req_msg_dict["filePath"] = [save_dir] / form["upload_file"].filename
 
     except KeyError as err:
         raise HTTPException(
@@ -69,8 +68,23 @@ async def dataset_validation_request(
             },
         )
 
-    # the message is valid so we can continue with the request
-    # TODO
+    data_dir = "collection/"
+    issue_dir = "issue/"
+    column_field_dir = "column-field/"
+    transformed_dir = "transformed/"
+    additional_column_mappings = None
+    additional_concats = None
+
+    pipeline.run_endpoint_workflow(
+        dataset,
+        organisation,
+        data_dir,
+        issue_dir,
+        column_field_dir,
+        transformed_dir,
+        additional_col_mappings=additional_column_mappings,
+        additional_concats=additional_concats,
+    )
 
     # return an appropriate response
     return {"status": "SUCCESS", "data": req_msg_dict}
