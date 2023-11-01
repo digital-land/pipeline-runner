@@ -87,4 +87,8 @@ async def dataset_validation_request(
     )
 
     # return an appropriate response
-    return {"status": "SUCCESS", "data": req_msg_dict}
+    mock_final_response: dict
+    with open("tests/data/example_jsons/API_RUN_PIPELINE_RESPONSE.json") as f:
+        mock_final_response = json.load(f)
+
+    return mock_final_response

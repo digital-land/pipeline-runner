@@ -4,28 +4,5 @@
     "title": "API Run Pipeline Response",
     "description": "",
     "type": "object",
-    "properties": {
-      "status": {
-        "type": "string"
-      },
-      "data": {
-        "type": "object",
-        "properties": {
-          "dataset": {
-            "type": "string"
-          },
-          "collection": {
-            "type": "string"
-          },
-          "organization": {
-            "type": "string"
-          },
-          "filePath": {
-            "type": "string"
-          }
-        },
-        "required": ["dataset", "collection", "organization", "filePath"]
-      }
-    },
-    "required": ["status", "data"]
-  }
+    "properties":{}
+}

@@ -48,7 +48,6 @@ def api_client():
     return client
 
 
-# @pytest.mark.skip(reason="")
 def test_good_validation_request_has_valid_response(api_client: TestClient):
     endpoint_url = VALIDATE_FILE_REQ_URL
     upload_file = [("upload_file", open("tests/data/json_schemas/dummy.csv", "rb"))]
@@ -75,7 +74,6 @@ def test_good_validation_request_has_valid_response(api_client: TestClient):
     assert resp.status_code == 200
 
 
-# @pytest.mark.skip(reason="")
 @pytest.mark.parametrize(
     "form_data, upload_file",
     [
