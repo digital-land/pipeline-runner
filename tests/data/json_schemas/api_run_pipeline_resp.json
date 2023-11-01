@@ -4,5 +4,76 @@
     "title": "API Run Pipeline Response",
     "description": "",
     "type": "object",
-    "properties":{}
+    "properties":{
+      "converted-csv": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "Reference": { "type": "string" },
+            "Name": { "type": "string" },
+            "Geometry": { "type": "string" },
+            "Start date": { "type": "string" },
+            "Legislation": { "type": "string" },
+            "Notes": { "type": "string" },
+            "Point": { "type": "string" },
+            "End date": { "type": "string" },
+            "Document URL": { "type": "string" }
+          }
+        }
+      },
+      "issue-log": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "dataset": { "type": "string" },
+            "resource": { "type": "string" },
+            "line-number": { "type": "string" },
+            "entry-number": { "type": "string" },
+            "field": { "type": "string" },
+            "issue-type": { "type": "string" },
+            "value": { "type": "string" }
+          }
+        }
+      },
+      "flattened-csv": {
+        "type": "object",
+        "properties": {
+          "entities": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "dataset": { "type": "string" },
+                "end-date": { "type": "string" },
+                "entity": { "type": "string" },
+                "entry-date": { "type": "string" },
+                "geometry": { "type": "string" },
+                "name": { "type": "string" },
+                "organisation-entity": { "type": "string" },
+                "point": { "type": "string" },
+                "prefix": { "type": "string" },
+                "reference": { "type": "string" },
+                "start-date": { "type": "string" },
+                "typology": { "type": "string" }
+              }
+            }
+          }
+        }
+      },
+      "column-field-log": {
+        "type": "array",
+        "items": {
+          "type": "object",
+          "properties": {
+            "entry-date": { "type": "string" },
+            "dataset": { "type": "string" },
+            "resource": { "type": "string" },
+            "column": { "type": "string" },
+            "field": { "type": "string" }
+          }
+        }
+      }
+    }
 }
