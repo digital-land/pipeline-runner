@@ -18,8 +18,7 @@
         "minLength": 1
       },
       "filePath": {
-        "type": "string",
-        "pattern": ".*\\.csv$"
+        "type": "string"
       }
     },
     "required": ["dataset", "collection", "organization", "filePath"]

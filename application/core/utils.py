@@ -8,10 +8,10 @@ logger = get_logger(__name__)
 tmp_dir = "collection/resource"
 
 
-def save_uploaded_file(file):
+def save_uploaded_file(file, dataset):
+    temp_file_path = None  # Initialize temp_file_path
     try:
-        print(file)
-        temp_file_path = os.path.join(tmp_dir, file.filename)
+        temp_file_path = os.path.join(tmp_dir, hash_value(file.filename))
         # file.seek(0)
         with open(temp_file_path, "wb") as temp_file:
             temp_file.write(file.file.read())

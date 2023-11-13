@@ -10,17 +10,12 @@ from application.services.json_schema_svc import (
     get_schema_svc,
 )
 from datetime import datetime
-import application.core.pipeline as pipeline
+import application.core.workflow as workflow
 
 
 logger = get_logger(__name__)
 
 router = APIRouter()
-
-
-@router.get("/")
-async def validate(request: Request):
-    return json.dumps({"status": "200"})
 
 
 @router.post("/file/request/")
@@ -39,7 +34,7 @@ async def dataset_validation_request(
             dataset = form["dataset"]
             organisation = form["organization"]
             # save the uploaded file
-            utils.save_uploaded_file(file)
+            utils.save_uploaded_file(file, dataset)
 
     except KeyError as err:
         raise HTTPException(
@@ -68,27 +63,5 @@ async def dataset_validation_request(
             },
         )
 
-    data_dir = "collection/"
-    issue_dir = "issue/"
-    column_field_dir = "column-field/"
-    transformed_dir = "transformed/"
-    additional_column_mappings = None
-    additional_concats = None
-
-    pipeline.run_endpoint_workflow(
-        dataset,
-        organisation,
-        data_dir,
-        issue_dir,
-        column_field_dir,
-        transformed_dir,
-        additional_col_mappings=additional_column_mappings,
-        additional_concats=additional_concats,
-    )
-
-    # return an appropriate response
-    mock_final_response: dict
-    with open("tests/data/example_jsons/API_RUN_PIPELINE_RESPONSE.json") as f:
-        mock_final_response = json.load(f)
-
-    return mock_final_response
+    response_data = workflow.run_workflow(dataset, organisation)
+    return json.dumps(response_data)
