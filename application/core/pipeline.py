@@ -49,7 +49,7 @@ logger = get_logger(__name__)
 def fetch_response_data(
     dataset,
     organisation,
-    data_dir,
+    collection_dir,
     issue_dir,
     column_field_dir,
     transformed_dir,
@@ -57,7 +57,7 @@ def fetch_response_data(
     additional_col_mappings,
     additional_concats,
 ):
-    input_path = os.path.join(data_dir, "resource")
+    input_path = os.path.join(collection_dir, "resource")
     # List all files in the "resource" directory
     files_in_resource = os.listdir(input_path)
 
@@ -74,7 +74,7 @@ def fetch_response_data(
 
     # Create directories if they don't exist
     for directory in [
-        data_dir,
+        collection_dir,
         issue_dir,
         column_field_dir,
         transformed_dir,

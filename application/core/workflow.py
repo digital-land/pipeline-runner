@@ -1,14 +1,18 @@
 import os
 import csv
+import urllib
+from urllib.error import HTTPError
 from application.logging.logger import get_logger
 from application.core.pipeline import fetch_response_data, resource_from_path
 
 
 logger = get_logger(__name__)
 
+source_url = "https://raw.githubusercontent.com/digital-land/"
+
 
 def run_workflow(dataset, organisation):
-    data_dir = "collection/"
+    collection_dir = "collection/"
     issue_dir = "issue/"
     column_field_dir = "var/column-field/"
     transformed_dir = "transformed/"
@@ -17,10 +21,34 @@ def run_workflow(dataset, organisation):
     additional_column_mappings = None
     additional_concats = None
 
+    # pipeline directory structure & download
+    pipeline_dir = os.path.join("pipeline")
+    os.makedirs(pipeline_dir, exist_ok=True)
+    pipeline_csvs = [
+        "column.csv",
+        "concat.csv",
+        "convert.csv",
+        "default.csv",
+        "filter.csv",
+        "lookup.csv",
+        "patch.csv",
+        "skip.csv",
+        "transform.csv",
+        "combine.csv",
+    ]
+    for pipeline_csv in pipeline_csvs:
+        try:
+            urllib.request.urlretrieve(
+                f"{source_url}/{dataset + '-collection'}/main/pipeline/{pipeline_csv}",
+                os.path.join(pipeline_dir, pipeline_csv),
+            )
+        except HTTPError as e:
+            print(e)
+
     fetch_response_data(
         dataset,
         organisation,
-        data_dir,
+        collection_dir,
         issue_dir,
         column_field_dir,
         transformed_dir,
@@ -29,7 +57,7 @@ def run_workflow(dataset, organisation):
         additional_concats=additional_concats,
     )
 
-    input_path = os.path.join(data_dir, "resource")
+    input_path = os.path.join(collection_dir, "resource")
     # List all files in the "resource" directory
     files_in_resource = os.listdir(input_path)
 
@@ -41,7 +69,9 @@ def run_workflow(dataset, organisation):
     if os.path.exists(os.path.join(converted_dir, f"{resource}.csv")):
         converted_json = csv_to_json(os.path.join(converted_dir, f"{resource}.csv"))
     else:
-        converted_json = csv_to_json(os.path.join(data_dir, "resource", f"{resource}"))
+        converted_json = csv_to_json(
+            os.path.join(collection_dir, "resource", f"{resource}")
+        )
 
     issue_log_json = csv_to_json(os.path.join(issue_dir, dataset, f"{resource}.csv"))
     column_field_json = csv_to_json(

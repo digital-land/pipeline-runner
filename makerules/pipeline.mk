@@ -3,17 +3,9 @@
 	dataset\
 	commit-dataset
 
-# data sources
-ifeq ($(PIPELINE_CONFIG_URL),)
-PIPELINE_CONFIG_URL=$(CONFIG_URL)pipeline/$(COLLECTION_NAME)/
-endif
 
 ifeq ($(COLLECTION_DIR),)
 COLLECTION_DIR=collection/
-endif
-
-ifeq ($(PIPELINE_DIR),)
-PIPELINE_DIR=pipeline/
 endif
 
 # collected resources
@@ -69,22 +61,6 @@ endif
 
 ifeq ($(EXPECTATION_DIR),)
 EXPECTATION_DIR = expectations/
-endif
-
-ifeq ($(PIPELINE_CONFIG_FILES),)
-$(info PIPELINE_DIR is $(PIPELINE_DIR))
-PIPELINE_CONFIG_FILES=\
-	$(PIPELINE_DIR)column.csv\
-	$(PIPELINE_DIR)combine.csv\
-	$(PIPELINE_DIR)concat.csv\
-	$(PIPELINE_DIR)convert.csv\
-	$(PIPELINE_DIR)default.csv\
-	$(PIPELINE_DIR)default-value.csv\
-	$(PIPELINE_DIR)filter.csv\
-	$(PIPELINE_DIR)lookup.csv\
-	$(PIPELINE_DIR)patch.csv\
-	$(PIPELINE_DIR)skip.csv\
-	$(PIPELINE_DIR)transform.csv
 endif
 
 define run-pipeline
@@ -146,14 +122,3 @@ makerules::
 var/converted/%.csv: collection/resource/%
 	mkdir -p var/converted/
 	digital-land convert $<
-
-
-
-$(PIPELINE_DIR)%.csv:
-	@mkdir -p $(PIPELINE_DIR)
-	curl -qfsL '$(PIPELINE_CONFIG_URL)$(notdir $@)' > $@
-
-config:: $(PIPELINE_CONFIG_FILES)
-
-clean::
-	rm -f $(PIPELINE_CONFIG_FILES)

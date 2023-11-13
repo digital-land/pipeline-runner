@@ -9,6 +9,7 @@ tmp_dir = "collection/resource"
 
 
 def save_uploaded_file(file, dataset):
+    os.makedirs(tmp_dir, exist_ok=True)
     temp_file_path = None  # Initialize temp_file_path
     try:
         temp_file_path = os.path.join(tmp_dir, hash_value(file.filename))

@@ -16,10 +16,6 @@ ifeq ($(CONFIG_URL),)
 CONFIG_URL=https://raw.githubusercontent.com/digital-land/config/main/
 endif
 
-ifeq ($(COLLECTION_NAME),)
-COLLECTION_NAME=conservation-area
-endif
-
 ifeq ($(CACHE_DIR),)
 CACHE_DIR=var/cache/
 endif
