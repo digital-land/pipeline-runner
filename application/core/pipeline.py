@@ -54,6 +54,8 @@ def fetch_response_data(
     column_field_dir,
     transformed_dir,
     flattened_dir,
+    dataset_dir,
+    dataset_resource_dir,
     additional_col_mappings,
     additional_concats,
 ):
@@ -79,12 +81,10 @@ def fetch_response_data(
         column_field_dir,
         transformed_dir,
         flattened_dir,
+        dataset_dir,
     ]:
         os.makedirs(directory, exist_ok=True)
 
-    # add transformedd, dataset and issue directories
-    dataset_dir = os.path.join("dataset")
-    os.makedirs(dataset_dir, exist_ok=True)
     os.makedirs(os.path.join(transformed_dir, dataset))
     os.makedirs(os.path.join(flattened_dir, dataset))
 
@@ -98,19 +98,19 @@ def fetch_response_data(
     for file_name in files_in_resource:
         file_path = os.path.join(input_path, file_name)
 
-        os.makedirs(os.path.join("issue", dataset), exist_ok=True)
-        os.makedirs(os.path.join("var", "column-field", dataset), exist_ok=True)
-        os.makedirs(os.path.join("var", "dataset-resource", dataset), exist_ok=True)
+        os.makedirs(os.path.join(issue_dir, dataset), exist_ok=True)
+        os.makedirs(os.path.join(column_field_dir, dataset), exist_ok=True)
+        os.makedirs(os.path.join(dataset_resource_dir, dataset), exist_ok=True)
 
         pipeline_run(
             dataset=dataset,
             pipeline=pipeline,
             specification=specification,
             input_path=file_path,
-            output_path=os.path.join("transformed", dataset, f"{file_name}.csv"),
-            issue_dir=os.path.join("issue", dataset),
-            column_field_dir=os.path.join("var", "column-field", dataset),
-            dataset_resource_dir=os.path.join("var", "dataset-resource", dataset),
+            output_path=os.path.join(transformed_dir, dataset, f"{file_name}.csv"),
+            issue_dir=os.path.join(issue_dir, dataset),
+            column_field_dir=os.path.join(column_field_dir, dataset),
+            dataset_resource_dir=os.path.join(dataset_resource_dir, dataset),
             organisation_path=os.path.join("var", "cache", "organisation.csv"),
             save_harmonised=False,
             organisations=[organisation],
@@ -118,23 +118,23 @@ def fetch_response_data(
         )
 
         # build dataset
-        dataset_input_path = os.path.join("transformed", dataset, f"{file_name}.csv")
+        dataset_input_path = os.path.join(transformed_dir, dataset, f"{file_name}.csv")
         new_dataset_create(
             input_path=dataset_input_path,
-            output_path=os.path.join("dataset", f"{dataset}.sqlite3"),
+            output_path=os.path.join(dataset_dir, f"{dataset}.sqlite3"),
             organisation_path=os.path.join("var", "cache", "organisation.csv"),
             pipeline=pipeline,
             dataset=dataset,
             specification_dir=os.path.join("specification/"),
-            issue_dir=os.path.join("issue"),
+            issue_dir=issue_dir,
         )
 
         dataset_dump(
-            os.path.join("dataset", f"{dataset}.sqlite3"),
-            os.path.join("dataset", f"{dataset}.csv"),
+            os.path.join(dataset_dir, f"{dataset}.sqlite3"),
+            os.path.join(dataset_dir, f"{dataset}.csv"),
         )
         dataset_dump_flattened(
-            os.path.join("dataset", f"{dataset}.csv"),
+            os.path.join(dataset_dir, f"{dataset}.csv"),
             flattened_dir,
             specification,
             dataset,
@@ -164,9 +164,7 @@ def pipeline_run(
     schema = specification.pipeline[pipeline.name]["schema"]
     intermediate_fieldnames = specification.intermediate_fieldnames(pipeline)
     issue_log = IssueLog(dataset=dataset, resource=resource)
-    print(issue_log)
     column_field_log = ColumnFieldLog(dataset=dataset, resource=resource)
-    print(column_field_log)
     dataset_resource_log = DatasetResourceLog(dataset=dataset, resource=resource)
 
     # load pipeline configuration
