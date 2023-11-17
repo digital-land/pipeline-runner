@@ -1,5 +1,3 @@
-import json
-
 from fastapi import APIRouter, Request, Depends, status, HTTPException
 import application.core.utils as utils
 from application.logging.logger import get_logger
@@ -22,17 +20,17 @@ router = APIRouter()
 async def dataset_validation_request(
     req: Request, schema_svc: JsonSchemaSvc = Depends(get_schema_svc)
 ):
-    req_msg_dict = {"dataset": "", "collection": "", "organization": "", "filePath": ""}
+    req_msg_dict = {"dataset": "", "collection": "", "organisation": "", "filePath": ""}
 
     try:
         async with req.form() as form:
             req_msg_dict["dataset"] = form["dataset"]
             req_msg_dict["collection"] = form["collection"]
-            req_msg_dict["organization"] = form["organization"]
+            req_msg_dict["organisation"] = form["organisation"]
             req_msg_dict["filePath"] = form["upload_file"].filename
             file = form["upload_file"]
             dataset = form["dataset"]
-            organisation = form["organization"]
+            organisation = form["organisation"]
             # save the uploaded file
             utils.save_uploaded_file(file, dataset)
 
@@ -64,4 +62,4 @@ async def dataset_validation_request(
         )
 
     response_data = workflow.run_workflow(dataset, organisation)
-    return json.dumps(response_data)
+    return response_data

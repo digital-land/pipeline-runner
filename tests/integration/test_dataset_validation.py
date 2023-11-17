@@ -25,12 +25,12 @@ BAD_FORM_DATA_3 = {
 BAD_FORM_DATA_4 = {
     "dataset": "",
     "collection": "test-collection",
-    "organization": "test-organization",
+    "organisation": "test-organisation",
 }
 GOOD_FORM_DATA = {
     "dataset": "test-dataset",
     "collection": "test-collection",
-    "organization": "test-organization",
+    "organisation": "test-organisation",
 }
 
 
@@ -54,7 +54,7 @@ def test_good_validation_request_has_valid_response(api_client: TestClient):
     form_data = {
         "dataset": "test-dataset",
         "collection": "test-collection",
-        "organization": "test-organization",
+        "organisation": "test-organisation",
     }
 
     resp = api_client.post(url=endpoint_url, data=form_data, files=upload_file)
@@ -116,7 +116,7 @@ def test_bad_validation_request_has_invalid_response(
         assert resp_json["detail"]["errMsg"] == "Missing required field: 'collection'"
 
     if request.node.name == "test_bad_validation_request_has_invalid_response[3]":
-        assert resp_json["detail"]["errMsg"] == "Missing required field: 'organization'"
+        assert resp_json["detail"]["errMsg"] == "Missing required field: 'organisation'"
 
     if request.node.name == "test_bad_validation_request_has_invalid_response[4]":
         assert (

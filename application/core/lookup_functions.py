@@ -31,35 +31,6 @@ from digital_land.commands import resource_from_path
 from digital_land.phase.lookup import key
 
 lookup_file_path = "./pipeline/lookup.csv"
-# sort lookups
-# 44000000,44999999
-# if os.path.exists('./pipeline/lookup.csv'):
-#     lookups = []
-#     entities = []
-#     fieldnames = []
-#     with open(lookup_file_path) as f:
-#         dictreader = csv.DictReader(f)
-#         fieldnames = dictreader.fieldnames
-#         for row in dictreader:
-#             lookups.append(row)
-#             entities.append(int(row['entity']))
-
-#     entities = list(dict.fromkeys(entities))
-#     entities = sorted(entities)
-#     entity_min = entities[0]
-#     entity_max = entities[-1]
-#     complete_entities = list(range(entity_min,entity_max))
-#     entity_gaps = [e for e in complete_entities if e not in entities]
-#     print(f' minimum entity: {entity_min}')
-#     print(f' maximum entity: {entity_max}')
-#     entity_gaps_string = ', '.join(str(entity_gaps))
-#     print(f' entity number gaps: {entity_gaps}')
-
-#     lookups = sorted(lookups,key=lambda d: d['entity'])
-#     with open(lookup_file_path,'w') as f:
-#         dictwriter = csv.DictWriter(f,fieldnames=fieldnames)
-#         dictwriter.writeheader()
-#         dictwriter.writerows(lookups)
 
 
 # print all lookups that aren't found will need to read through all files
@@ -191,7 +162,10 @@ def save_resource_unidentified_lookups(
             fields=specification.schema_field[schema],
             migrations=pipeline.migrations(),
         ),
-        OrganisationPhase(organisation=organisation),
+        OrganisationPhase(
+            organisation=organisation,
+            issues=issue_log,
+        ),
         FieldPrunePhase(fields=specification.current_fieldnames(schema)),
         EntityReferencePhase(
             dataset=dataset,
@@ -204,7 +178,7 @@ def save_resource_unidentified_lookups(
             fieldnames=["prefix", "organisation", "reference"],
         ),
     )
-    print(issue_log)
+    # issue_log.save(os.path.join("issue", dataset, resource + ".csv"))
 
 
 def standardise_lookups(lookups_path):

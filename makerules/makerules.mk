@@ -35,9 +35,11 @@ server::
 
 init::
 	python -m pip install pip-tools
+	make pre-commit-install
+
+update-dependencies::
 	make piptool-compile
 	make dependencies
-	make pre-commit-install
 
 piptool-compile::
 	python -m piptools compile --output-file=requirements/requirements.txt requirements/requirements.in
@@ -108,10 +110,6 @@ jslint-fix::
 # =============================
 # Testing
 # =============================
-
-test-acceptance:
-	python -m playwright install chromium
-	python -m pytest --md-report --md-report-color=never -p no:warnings tests/acceptance
 
 test: test-unit test-integration
 

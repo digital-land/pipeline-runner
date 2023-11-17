@@ -3,7 +3,7 @@
 This repo serves as a way to run a given resource through the pipeline in order to provide validation/information on the data.
 
 ## Prerequisites
-- Python 3.8 or above (?)
+- Python 3.6 or above
 - Create a virtual environment using
     ```
     python3 -m venv --prompt . .venv --clear --upgrade-deps
@@ -14,7 +14,7 @@ This repo serves as a way to run a given resource through the pipeline in order 
     ```
 
 ## Initialisation
-- After cloning this repo, run the following command:
+- After cloning this repo, run the following command to download all the dependencies:
     ```
     make init
     ```
@@ -27,14 +27,10 @@ This repo serves as a way to run a given resource through the pipeline in order 
 
 ## Adding new dependencies
 - Project dependencies are managed via pip-tools
-- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.in `
-- Then to compile your requirements file and produce a requirements.txt file run:
+- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.`
+- to install the requirements from your requirements.in file run:
     ```
-    make piptool-compile
-    ```
-- Finally, to install the requirements from your requirements.txt file run:
-    ```
-    make dependencies
+    make update-dependencies
     ```
 
 

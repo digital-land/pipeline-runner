@@ -56,13 +56,15 @@ def fetch_response_data(
     flattened_dir,
     dataset_dir,
     dataset_resource_dir,
+    pipeline_dir,
+    specification_dir,
     additional_col_mappings,
     additional_concats,
 ):
     input_path = os.path.join(collection_dir, "resource")
     # List all files in the "resource" directory
     files_in_resource = os.listdir(input_path)
-
+    os.makedirs(os.path.join(issue_dir, dataset), exist_ok=True)
     for file_name in files_in_resource:
         file_path = os.path.join(input_path, file_name)
         # retrieve unnassigned entities and assign
@@ -70,8 +72,8 @@ def fetch_response_data(
             resource_path=file_path,
             dataset=dataset,
             organisation=organisation,
-            pipeline_dir=os.path.join("pipeline/"),
-            specification_dir=os.path.join("specification/"),
+            pipeline_dir=pipeline_dir,
+            specification_dir=specification_dir,
         )
 
     # Create directories if they don't exist
@@ -89,9 +91,7 @@ def fetch_response_data(
     os.makedirs(os.path.join(flattened_dir, dataset))
 
     # define variables for Pipeline
-    pipeline_dir = os.path.join("pipeline/")
     pipeline = Pipeline(pipeline_dir, dataset)
-    specification_dir = os.path.join("specification/")
     specification = Specification(specification_dir)
 
     # Access each file in the "resource" directory
@@ -125,7 +125,7 @@ def fetch_response_data(
             organisation_path=os.path.join("var", "cache", "organisation.csv"),
             pipeline=pipeline,
             dataset=dataset,
-            specification_dir=os.path.join("specification/"),
+            specification_dir=specification_dir,
             issue_dir=issue_dir,
         )
 
@@ -133,12 +133,13 @@ def fetch_response_data(
             os.path.join(dataset_dir, f"{dataset}.sqlite3"),
             os.path.join(dataset_dir, f"{dataset}.csv"),
         )
-        dataset_dump_flattened(
-            os.path.join(dataset_dir, f"{dataset}.csv"),
-            flattened_dir,
-            specification,
-            dataset,
-        )
+        if os.path.getsize(os.path.join(dataset_dir, f"{dataset}.csv")) != 0:
+            dataset_dump_flattened(
+                os.path.join(dataset_dir, f"{dataset}.csv"),
+                flattened_dir,
+                specification,
+                dataset,
+            )
 
 
 def pipeline_run(
@@ -147,7 +148,7 @@ def pipeline_run(
     specification,
     input_path,
     output_path,
-    collection_dir="./collection",  # TBD: remove, replaced by endpoints, organisations and entry_date
+    organisations,
     null_path=None,  # TBD: remove this
     issue_dir=None,
     organisation_path=None,
@@ -156,7 +157,6 @@ def pipeline_run(
     dataset_resource_dir=None,
     custom_temp_dir=None,  # TBD: rename to "tmpdir"
     endpoints=[],
-    organisations=[],
     entry_date="",
 ):
     resource = resource_from_path(input_path)
@@ -265,8 +265,10 @@ def assign_entries(
     resource_path, dataset, organisation, pipeline_dir, specification_dir
 ):
     """
-    assuming that the endpoint is new (strictly it doesn't have to be) then we neeed to assign new eentity numbers
+    assuming that the endpoint is new (strictly it doesn't have to be) then we neeed to assign new entity numbers
     """
+
+    # define log
     lookup_path = os.path.join(pipeline_dir, "lookup.csv")
     save_resource_unidentified_lookups(
         resource_path,
@@ -279,7 +281,10 @@ def assign_entries(
     with open("./var/cache/unassigned-entries.csv") as f:
         dictreader = csv.DictReader(f)
         for row in dictreader:
-            unassigned_entries.append(row)
+            if row["reference"] == "":
+                logger.info("The 'reference' column is empty")
+            else:
+                unassigned_entries.append(row)
     standardise_lookups(lookup_path)
     # if unassigned_entries is not None
     if len(unassigned_entries) > 0:
