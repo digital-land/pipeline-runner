@@ -180,9 +180,7 @@ def pipeline_run(
     # load organisations
     organisation = Organisation(organisation_path, Path(pipeline.path))
 
-    # severity_csv_path = os.path.join(specification_dir, "issue-type.csv")
-    # Load the severity mapping CSV file into a DataFrame
-    # severity_mapping = pd.read_csv(severity_csv_path)
+    severity_csv_path = os.path.join(specification_dir, "issue-type.csv")
 
     # resource specific default values
     if len(organisations) == 1:
@@ -253,7 +251,7 @@ def pipeline_run(
     )
 
     # Add the 'severity' column based on the mapping
-    # issue_log.add_severity_column(severity_csv_path)
+    issue_log.add_severity_column(severity_csv_path)
     issue_log.save(os.path.join(issue_dir, resource + ".csv"))
     column_field_log.save(os.path.join(column_field_dir, resource + ".csv"))
     dataset_resource_log.save(os.path.join(dataset_resource_dir, resource + ".csv"))
