@@ -31,9 +31,8 @@ from digital_land.phase.prefix import EntityPrefixPhase
 from digital_land.phase.prune import FieldPrunePhase, EntityPrunePhase, FactPrunePhase
 from digital_land.phase.reference import EntityReferencePhase, FactReferencePhase
 from digital_land.phase.save import SavePhase
-from digital_land.package.dataset import DatasetPackage
 from digital_land.pipeline import run_pipeline, Pipeline
-from digital_land.commands import dataset_dump
+from digital_land.commands import dataset_dump, dataset_create
 from application.core.lookup_functions import (
     save_resource_unidentified_lookups,
     standardise_lookups,
@@ -61,6 +60,10 @@ def fetch_response_data(
     additional_col_mappings,
     additional_concats,
 ):
+    # define variables for Pipeline and specification
+    pipeline = Pipeline(pipeline_dir, dataset)
+    specification = Specification(specification_dir)
+
     input_path = os.path.join(collection_dir, "resource")
     # List all files in the "resource" directory
     files_in_resource = os.listdir(input_path)
@@ -73,7 +76,7 @@ def fetch_response_data(
             dataset=dataset,
             organisation=organisation,
             pipeline_dir=pipeline_dir,
-            specification_dir=specification_dir,
+            specification=specification,
         )
 
     # Create directories if they don't exist
@@ -90,10 +93,6 @@ def fetch_response_data(
     os.makedirs(os.path.join(transformed_dir, dataset))
     os.makedirs(os.path.join(flattened_dir, dataset))
 
-    # define variables for Pipeline
-    pipeline = Pipeline(pipeline_dir, dataset)
-    specification = Specification(specification_dir)
-
     # Access each file in the "resource" directory
     for file_name in files_in_resource:
         file_path = os.path.join(input_path, file_name)
@@ -105,7 +104,7 @@ def fetch_response_data(
         pipeline_run(
             dataset=dataset,
             pipeline=pipeline,
-            specification=specification,
+            specification_dir=specification_dir,
             input_path=file_path,
             output_path=os.path.join(transformed_dir, dataset, f"{file_name}.csv"),
             issue_dir=os.path.join(issue_dir, dataset),
@@ -119,13 +118,13 @@ def fetch_response_data(
 
         # build dataset
         dataset_input_path = os.path.join(transformed_dir, dataset, f"{file_name}.csv")
-        new_dataset_create(
-            input_path=dataset_input_path,
+        dataset_create(
+            input_paths=[dataset_input_path],
             output_path=os.path.join(dataset_dir, f"{dataset}.sqlite3"),
             organisation_path=os.path.join("var", "cache", "organisation.csv"),
             pipeline=pipeline,
             dataset=dataset,
-            specification_dir=specification_dir,
+            specification=specification,
             issue_dir=issue_dir,
         )
 
@@ -145,7 +144,7 @@ def fetch_response_data(
 def pipeline_run(
     dataset,
     pipeline,
-    specification,
+    specification_dir,
     input_path,
     output_path,
     organisations,
@@ -161,6 +160,7 @@ def pipeline_run(
 ):
     resource = resource_from_path(input_path)
 
+    specification = Specification(specification_dir)
     schema = specification.pipeline[pipeline.name]["schema"]
     intermediate_fieldnames = specification.intermediate_fieldnames(pipeline)
     issue_log = IssueLog(dataset=dataset, resource=resource)
@@ -179,6 +179,10 @@ def pipeline_run(
 
     # load organisations
     organisation = Organisation(organisation_path, Path(pipeline.path))
+
+    # severity_csv_path = os.path.join(specification_dir, "issue-type.csv")
+    # Load the severity mapping CSV file into a DataFrame
+    # severity_mapping = pd.read_csv(severity_csv_path)
 
     # resource specific default values
     if len(organisations) == 1:
@@ -247,6 +251,9 @@ def pipeline_run(
             fieldnames=specification.factor_fieldnames(),
         ),
     )
+
+    # Add the 'severity' column based on the mapping
+    # issue_log.add_severity_column(severity_csv_path)
     issue_log.save(os.path.join(issue_dir, resource + ".csv"))
     column_field_log.save(os.path.join(column_field_dir, resource + ".csv"))
     dataset_resource_log.save(os.path.join(dataset_resource_dir, resource + ".csv"))
@@ -261,9 +268,7 @@ def default_output_path(command, input_path):
     return f"{directory}{command}/{resource_from_path(input_path)}.csv"
 
 
-def assign_entries(
-    resource_path, dataset, organisation, pipeline_dir, specification_dir
-):
+def assign_entries(resource_path, dataset, organisation, pipeline_dir, specification):
     """
     assuming that the endpoint is new (strictly it doesn't have to be) then we neeed to assign new entity numbers
     """
@@ -275,7 +280,7 @@ def assign_entries(
         dataset,
         [organisation],
         pipeline_dir=pipeline_dir,
-        specification_dir=specification_dir,
+        specification=specification,
     )
     unassigned_entries = []
     with open("./var/cache/unassigned-entries.csv") as f:
@@ -288,46 +293,9 @@ def assign_entries(
     standardise_lookups(lookup_path)
     # if unassigned_entries is not None
     if len(unassigned_entries) > 0:
-        add_unnassigned_to_lookups(unassigned_entries, lookup_path)
-
-
-def new_dataset_create(
-    input_path,
-    output_path,
-    organisation_path,
-    pipeline,
-    dataset,
-    specification_dir=None,
-    issue_dir="issue",
-):
-    if not output_path:
-        print("missing output path", file=sys.stderr)
-        sys.exit(2)
-
-    organisation = Organisation(organisation_path, Path(pipeline.path))
-    package = DatasetPackage(
-        dataset,
-        organisation=organisation,
-        path=output_path,
-        specification_dir=specification_dir,  # TBD: package should use this specification object
-    )
-    # input_path = "22a1c0d6d50c2af0a96454859a76f859747da7faafa4d9f0d4a12d7fa1f96c47"
-    package.create()
-    package.load_transformed(input_path)
-    package.load_entities()
-
-    old_entity_path = os.path.join(pipeline.path, "old-entity.csv")
-    if os.path.exists(old_entity_path):
-        package.load_old_entities(old_entity_path)
-
-    issue_paths = os.path.join(issue_dir, dataset)
-    if os.path.exists(issue_paths):
-        for issue_path in os.listdir(issue_paths):
-            package.load_issues(os.path.join(issue_paths, issue_path))
-    else:
-        logger.warning("No directory for this dataset in the provided issue_directory")
-
-    package.add_counts()
+        add_unnassigned_to_lookups(
+            unassigned_entries, lookup_path, dataset, specification
+        )
 
 
 def dataset_dump_flattened(csv_path, flattened_dir, specification, dataset):

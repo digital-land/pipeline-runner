@@ -5,12 +5,10 @@ from urllib.error import HTTPError
 import shutil
 from application.logging.logger import get_logger
 from application.core.pipeline import fetch_response_data, resource_from_path
-from application.core.config import Directories
+from application.core.config import Directories, source_url
 
 
 logger = get_logger(__name__)
-
-source_url = "https://raw.githubusercontent.com/digital-land/"
 
 
 def run_workflow(dataset, organisation, directories=None):
@@ -25,15 +23,7 @@ def run_workflow(dataset, organisation, directories=None):
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
-        "concat.csv",
-        "convert.csv",
-        "default.csv",
-        "filter.csv",
         "lookup.csv",
-        "patch.csv",
-        "skip.csv",
-        "transform.csv",
-        "combine.csv",
     ]
     for pipeline_csv in pipeline_csvs:
         try:
@@ -103,6 +93,7 @@ def run_workflow(dataset, organisation, directories=None):
         directories.FLATTENED_DIR,
         directories.DATASET_DIR,
         directories.DATASET_RESOURCE_DIR,
+        directories.PIPELINE_DIR,
     )
 
     return response_data
@@ -111,7 +102,8 @@ def run_workflow(dataset, organisation, directories=None):
 def clean_up(*directories):
     try:
         for directory in directories:
-            shutil.rmtree(directory)
+            if os.path.exists(directory):
+                shutil.rmtree(directory)
     except Exception as e:
         logger.error(f"An error occurred during cleanup: {e}")
 

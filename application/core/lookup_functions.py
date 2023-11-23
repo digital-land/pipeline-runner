@@ -20,7 +20,6 @@ from digital_land.phase.reference import EntityReferencePhase
 from digital_land.phase.prefix import EntityPrefixPhase
 from digital_land.phase.save import SavePhase
 from digital_land.pipeline import run_pipeline, Pipeline
-from digital_land.specification import Specification
 from digital_land.organisation import Organisation
 
 from digital_land.log import DatasetResourceLog, ColumnFieldLog, IssueLog
@@ -79,12 +78,11 @@ def save_resource_unidentified_lookups(
     input_path,
     dataset,
     organisations,
+    specification,
     pipeline_dir="./pipeline",
-    specification_dir="./specification",
 ):
     #  define pipeline and specification
     pipeline = Pipeline(pipeline_dir, dataset)
-    specification = Specification(specification_dir)
 
     # convert phase inputs
     resource = resource_from_path(input_path)
@@ -209,28 +207,27 @@ def standardise_lookups(lookups_path):
 
 
 def add_unnassigned_to_lookups(
-    unassigned_entries,
-    lookups_path,
+    unassigned_entries, lookups_path, dataset, specification
 ):
     fieldnames = []
     dataset_max_entity_ref = {}
     # get fieldnames from lookup.csv
     # get maximum entity numbers by dataset
-    with open(lookups_path) as f:
-        dictreader = csv.DictReader(f)
-        fieldnames = dictreader.fieldnames
-        for row in dictreader:
-            if dataset_max_entity_ref.get(row["prefix"], ""):
-                if dataset_max_entity_ref[row["prefix"]] < int(row["entity"]):
+    if os.path.isfile(lookups_path):
+        with open(lookups_path) as f:
+            dictreader = csv.DictReader(f)
+            fieldnames = dictreader.fieldnames
+            for row in dictreader:
+                if dataset_max_entity_ref.get(row["prefix"], ""):
+                    if dataset_max_entity_ref[row["prefix"]] < int(row["entity"]):
+                        dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
+                else:
                     dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
-            else:
-                dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
 
     # assign the entity
     # TO DO expand this so that if there are unnassigned entries with datasets
     #  not already in the list then it doesn't error
     for entry in unassigned_entries:
-        print(entry)
         entry["entity"] = dataset_max_entity_ref[entry["prefix"]] + 1
         dataset_max_entity_ref[entry["prefix"]] = (
             dataset_max_entity_ref[entry["prefix"]] + 1

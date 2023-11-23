@@ -1,3 +1,6 @@
+source_url = "https://raw.githubusercontent.com/digital-land/"
+
+
 class Directories:
     COLLECTION_DIR = "collection/"
     ISSUE_DIR = "issue/"

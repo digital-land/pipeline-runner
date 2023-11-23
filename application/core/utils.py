@@ -1,11 +1,12 @@
 from application.logging.logger import get_logger
 import os
 import hashlib
+from application.core.config import Directories
 
 
 logger = get_logger(__name__)
 
-tmp_dir = "collection/resource"
+tmp_dir = os.path.join(Directories.COLLECTION_DIR + "/resource")
 
 
 def save_uploaded_file(file, dataset):

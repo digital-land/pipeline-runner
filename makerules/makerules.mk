@@ -12,10 +12,6 @@ ifeq ($(SOURCE_URL),)
 SOURCE_URL=https://raw.githubusercontent.com/digital-land/
 endif
 
-ifeq ($(CONFIG_URL),)
-CONFIG_URL=https://raw.githubusercontent.com/digital-land/config/main/
-endif
-
 ifeq ($(CACHE_DIR),)
 CACHE_DIR=var/cache/
 endif
@@ -75,6 +71,7 @@ specification::
 	curl -qfsL '$(SOURCE_URL)/specification/main/specification/dataset-schema.csv' > specification/dataset-schema.csv
 	curl -qfsL '$(SOURCE_URL)/specification/main/specification/schema.csv' > specification/schema.csv
 	curl -qfsL '$(SOURCE_URL)/specification/main/specification/schema-field.csv' > specification/schema-field.csv
+	curl -qfsL '$(SOURCE_URL)/specification/main/specification/issue-type.csv' > specification/issue-type.csv
 
 
 init::	specification

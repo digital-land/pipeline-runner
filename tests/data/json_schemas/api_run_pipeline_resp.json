@@ -6,74 +6,16 @@
     "type": "object",
     "properties":{
       "converted-csv": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "Reference": { "type": "string" },
-            "Name": { "type": "string" },
-            "Geometry": { "type": "string" },
-            "Start date": { "type": "string" },
-            "Legislation": { "type": "string" },
-            "Notes": { "type": "string" },
-            "Point": { "type": "string" },
-            "End date": { "type": "string" },
-            "Document URL": { "type": "string" }
-          }
-        }
+        "type": "array"
       },
       "issue-log": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "dataset": { "type": "string" },
-            "resource": { "type": "string" },
-            "line-number": { "type": "string" },
-            "entry-number": { "type": "string" },
-            "field": { "type": "string" },
-            "issue-type": { "type": "string" },
-            "value": { "type": "string" }
-          }
-        }
+        "type": "array"
       },
       "flattened-csv": {
-        "type": "object",
-        "properties": {
-          "entities": {
-            "type": "array",
-            "items": {
-              "type": "object",
-              "properties": {
-                "dataset": { "type": "string" },
-                "end-date": { "type": "string" },
-                "entity": { "type": "string" },
-                "entry-date": { "type": "string" },
-                "geometry": { "type": "string" },
-                "name": { "type": "string" },
-                "organisation-entity": { "type": "string" },
-                "point": { "type": "string" },
-                "prefix": { "type": "string" },
-                "reference": { "type": "string" },
-                "start-date": { "type": "string" },
-                "typology": { "type": "string" }
-              }
-            }
-          }
-        }
+        "type": "array"
       },
       "column-field-log": {
-        "type": "array",
-        "items": {
-          "type": "object",
-          "properties": {
-            "entry-date": { "type": "string" },
-            "dataset": { "type": "string" },
-            "resource": { "type": "string" },
-            "column": { "type": "string" },
-            "field": { "type": "string" }
-          }
-        }
+        "type": "array"
       }
     }
 }
