@@ -1,7 +1,6 @@
 import csv
 import os
 from pathlib import Path
-import logging
 
 from digital_land.phase.phase import Phase
 from digital_land.phase.convert import ConvertPhase
@@ -176,34 +175,6 @@ def save_resource_unidentified_lookups(
             fieldnames=["prefix", "organisation", "reference"],
         ),
     )
-    # issue_log.save(os.path.join("issue", dataset, resource + ".csv"))
-
-
-def standardise_lookups(lookups_path):
-    """
-    standardise and sort the current lookup.csv file.
-    Specifically to ensure the correct columns are all there
-    and that it is ordered by entity number.
-    """
-    expected_fieldnames = ["prefix", "resource", "organisation", "reference", "entity"]
-    lookups = []
-    fieldnames = []
-    with open(lookups_path) as f:
-        dictreader = csv.DictReader(f)
-        fieldnames = dictreader.fieldnames
-        for row in dictreader:
-            lookups.append(row)
-
-    for fieldname in fieldnames:
-        if fieldname not in expected_fieldnames:
-            logging.warning(f"{fieldname}: unexpected fieldname in lookups.csv")
-
-    # reorder lookups
-    lookups = sorted(lookups, key=lambda d: d["entity"])
-    with open(lookups_path, "w") as f:
-        dictwriter = csv.DictWriter(f, fieldnames=fieldnames)
-        dictwriter.writeheader()
-        dictwriter.writerows(lookups)
 
 
 def add_unnassigned_to_lookups(
@@ -211,27 +182,40 @@ def add_unnassigned_to_lookups(
 ):
     fieldnames = []
     dataset_max_entity_ref = {}
-    # get fieldnames from lookup.csv
-    # get maximum entity numbers by dataset
-    if os.path.isfile(lookups_path):
-        with open(lookups_path) as f:
-            dictreader = csv.DictReader(f)
-            fieldnames = dictreader.fieldnames
-            for row in dictreader:
-                if dataset_max_entity_ref.get(row["prefix"], ""):
-                    if dataset_max_entity_ref[row["prefix"]] < int(row["entity"]):
-                        dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
-                else:
+    # Check if the file exists, create it if not
+    if not os.path.exists(lookups_path):
+        with open(lookups_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                ["prefix", "resource", "organisation", "reference", "entity"]
+            )
+
+    with open(lookups_path) as f:
+        dictreader = csv.DictReader(f)
+        fieldnames = dictreader.fieldnames
+        for row in dictreader:
+            if dataset_max_entity_ref.get(row["prefix"], ""):
+                if dataset_max_entity_ref[row["prefix"]] < int(row["entity"]):
                     dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
+            else:
+                dataset_max_entity_ref[row["prefix"]] = int(row["entity"])
 
     # assign the entity
-    # TO DO expand this so that if there are unnassigned entries with datasets
-    #  not already in the list then it doesn't error
+    # not already in the list then it doesn't error
     for entry in unassigned_entries:
-        entry["entity"] = dataset_max_entity_ref[entry["prefix"]] + 1
-        dataset_max_entity_ref[entry["prefix"]] = (
-            dataset_max_entity_ref[entry["prefix"]] + 1
-        )
+        prefix = entry["prefix"]
+        if dataset_max_entity_ref:
+            entity_value = int(dataset_max_entity_ref[prefix]) + 1
+        else:
+            # If it doesn't exist, use the minimum entity value from specification
+            entity_value = specification.get_dataset_entity_min(dataset)
+
+        entry["entity"] = entity_value
+        dataset_max_entity_ref[prefix] = entity_value
+        # entity_max = specification.get_dataset_entity_max(dataset)
+        # if int(entity_value) > entity_max:
+        #     #how to handle this?
+        #     pass
 
     # save the assignmeents
     with open(lookups_path, "a") as f:

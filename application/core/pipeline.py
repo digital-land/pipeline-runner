@@ -35,7 +35,6 @@ from digital_land.pipeline import run_pipeline, Pipeline
 from digital_land.commands import dataset_dump, dataset_create
 from application.core.lookup_functions import (
     save_resource_unidentified_lookups,
-    standardise_lookups,
     add_unnassigned_to_lookups,
 )
 
@@ -181,7 +180,6 @@ def pipeline_run(
     organisation = Organisation(organisation_path, Path(pipeline.path))
 
     severity_csv_path = os.path.join(specification_dir, "issue-type.csv")
-
     # resource specific default values
     if len(organisations) == 1:
         default_values["organisation"] = organisations[0]
@@ -235,9 +233,7 @@ def pipeline_run(
             fieldnames=intermediate_fieldnames,
             enabled=save_harmonised,
         ),
-        EntityPrunePhase(
-            issue_log=issue_log, dataset_resource_log=dataset_resource_log
-        ),
+        EntityPrunePhase(dataset_resource_log=dataset_resource_log),
         PivotPhase(),
         FactCombinePhase(issue_log=issue_log, fields=combine_fields),
         FactorPhase(),
@@ -250,7 +246,7 @@ def pipeline_run(
         ),
     )
 
-    # Add the 'severity' column based on the mapping
+    # Add the 'severity' and 'description' column based on the mapping
     issue_log.add_severity_column(severity_csv_path)
     issue_log.save(os.path.join(issue_dir, resource + ".csv"))
     column_field_log.save(os.path.join(column_field_dir, resource + ".csv"))
@@ -288,7 +284,7 @@ def assign_entries(resource_path, dataset, organisation, pipeline_dir, specifica
                 logger.info("The 'reference' column is empty")
             else:
                 unassigned_entries.append(row)
-    standardise_lookups(lookup_path)
+
     # if unassigned_entries is not None
     if len(unassigned_entries) > 0:
         add_unnassigned_to_lookups(

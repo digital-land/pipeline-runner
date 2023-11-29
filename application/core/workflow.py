@@ -18,12 +18,22 @@ def run_workflow(dataset, organisation, directories=None):
     if not directories:
         directories = Directories
 
+    clean_up(
+        directories.CONVERTED_DIR,
+        directories.ISSUE_DIR,
+        directories.COLUMN_FIELD_DIR,
+        directories.TRANSFORMED_DIR,
+        directories.FLATTENED_DIR,
+        directories.DATASET_DIR,
+        directories.DATASET_RESOURCE_DIR,
+        directories.PIPELINE_DIR,
+    )
+
     # pipeline directory structure & download
     pipeline_dir = os.path.join(directories.PIPELINE_DIR)
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
-        "lookup.csv",
     ]
     for pipeline_csv in pipeline_csvs:
         try:
