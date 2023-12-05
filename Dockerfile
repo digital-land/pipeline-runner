@@ -10,8 +10,3 @@ EXPOSE 5000
 ENV MODULE_NAME=application.app
 ARG RELEASE_TAG
 ENV RELEASE_TAG=${RELEASE_TAG}
-
-FROM production AS dev
-WORKDIR /src
-RUN pip install --user --no-cache-dir -r requirements/dev-requirements.txt
-RUN make init && make update-dependencies
