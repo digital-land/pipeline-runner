@@ -32,7 +32,7 @@ async def dataset_validation_request(
             dataset = form["dataset"]
             organisation = form["organisation"]
             # save the uploaded file
-            utils.save_uploaded_file(file, dataset)
+            utils.save_uploaded_file(file)
 
     except KeyError as err:
         raise HTTPException(

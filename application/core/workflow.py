@@ -18,19 +18,82 @@ def run_workflow(dataset, organisation, directories=None):
     if not directories:
         directories = Directories
 
-    clean_up(
-        directories.CONVERTED_DIR,
-        directories.ISSUE_DIR,
-        directories.COLUMN_FIELD_DIR,
-        directories.TRANSFORMED_DIR,
-        directories.FLATTENED_DIR,
-        directories.DATASET_DIR,
-        directories.DATASET_RESOURCE_DIR,
-        directories.PIPELINE_DIR,
-    )
+    try:
+        # pipeline directory structure & download
+        pipeline_dir = os.path.join(directories.PIPELINE_DIR)
+        fetch_pipeline_csvs(dataset, pipeline_dir)
 
-    # pipeline directory structure & download
-    pipeline_dir = os.path.join(directories.PIPELINE_DIR)
+        fetch_response_data(
+            dataset,
+            organisation,
+            directories.COLLECTION_DIR,
+            directories.ISSUE_DIR,
+            directories.COLUMN_FIELD_DIR,
+            directories.TRANSFORMED_DIR,
+            directories.FLATTENED_DIR,
+            directories.DATASET_DIR,
+            directories.DATASET_RESOURCE_DIR,
+            directories.PIPELINE_DIR,
+            directories.SPECIFICATION_DIR,
+            directories.CACHE_DIR,
+            additional_col_mappings=additional_column_mappings,
+            additional_concats=additional_concats,
+        )
+
+        input_path = os.path.join(directories.COLLECTION_DIR, "resource")
+        # List all files in the "resource" directory
+        files_in_resource = os.listdir(input_path)
+
+        for file_name in files_in_resource:
+            file_path = os.path.join(input_path, file_name)
+        resource = resource_from_path(file_path)
+
+        converted_json = []
+        if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
+            converted_json = csv_to_json(
+                os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")
+            )
+        else:
+            converted_json = csv_to_json(
+                os.path.join(directories.COLLECTION_DIR, "resource", f"{resource}")
+            )
+
+        issue_log_json = csv_to_json(
+            os.path.join(directories.ISSUE_DIR, dataset, f"{resource}.csv")
+        )
+        column_field_json = csv_to_json(
+            os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
+        )
+        flattened_json = csv_to_json(
+            os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
+        )
+
+        response_data = {
+            "converted-csv": converted_json,
+            "issue-log": issue_log_json,
+            "column-field-log": column_field_json,
+            "flattened-csv": flattened_json,
+        }
+    except Exception as e:
+        logger.error(f"An error occurred: {e}")
+
+    finally:
+        clean_up(
+            directories.COLLECTION_DIR,
+            directories.CONVERTED_DIR,
+            directories.ISSUE_DIR,
+            directories.COLUMN_FIELD_DIR,
+            directories.TRANSFORMED_DIR,
+            directories.FLATTENED_DIR,
+            directories.DATASET_DIR,
+            directories.DATASET_RESOURCE_DIR,
+            directories.PIPELINE_DIR,
+        )
+
+    return response_data
+
+
+def fetch_pipeline_csvs(dataset, pipeline_dir):
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
@@ -43,70 +106,6 @@ def run_workflow(dataset, organisation, directories=None):
             )
         except HTTPError as e:
             logger.error(f"Failed to retrieve pipeline CSV: {e}")
-
-    fetch_response_data(
-        dataset,
-        organisation,
-        directories.COLLECTION_DIR,
-        directories.ISSUE_DIR,
-        directories.COLUMN_FIELD_DIR,
-        directories.TRANSFORMED_DIR,
-        directories.FLATTENED_DIR,
-        directories.DATASET_DIR,
-        directories.DATASET_RESOURCE_DIR,
-        directories.PIPELINE_DIR,
-        directories.SPECIFICATION_DIR,
-        additional_col_mappings=additional_column_mappings,
-        additional_concats=additional_concats,
-    )
-
-    input_path = os.path.join(directories.COLLECTION_DIR, "resource")
-    # List all files in the "resource" directory
-    files_in_resource = os.listdir(input_path)
-
-    for file_name in files_in_resource:
-        file_path = os.path.join(input_path, file_name)
-    resource = resource_from_path(file_path)
-
-    converted_json = []
-    if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
-        converted_json = csv_to_json(
-            os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")
-        )
-    else:
-        converted_json = csv_to_json(
-            os.path.join(directories.COLLECTION_DIR, "resource", f"{resource}")
-        )
-
-    issue_log_json = csv_to_json(
-        os.path.join(directories.ISSUE_DIR, dataset, f"{resource}.csv")
-    )
-    column_field_json = csv_to_json(
-        os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
-    )
-    flattened_json = csv_to_json(
-        os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
-    )
-
-    response_data = {
-        "converted-csv": converted_json,
-        "issue-log": issue_log_json,
-        "column-field-log": column_field_json,
-        "flattened-csv": flattened_json,
-    }
-    clean_up(
-        directories.COLLECTION_DIR,
-        directories.CONVERTED_DIR,
-        directories.ISSUE_DIR,
-        directories.COLUMN_FIELD_DIR,
-        directories.TRANSFORMED_DIR,
-        directories.FLATTENED_DIR,
-        directories.DATASET_DIR,
-        directories.DATASET_RESOURCE_DIR,
-        directories.PIPELINE_DIR,
-    )
-
-    return response_data
 
 
 def clean_up(*directories):

@@ -77,6 +77,7 @@ def save_resource_unidentified_lookups(
     input_path,
     dataset,
     organisations,
+    cache_dir,
     specification,
     pipeline_dir="./pipeline",
 ):
@@ -118,7 +119,7 @@ def save_resource_unidentified_lookups(
 
     # organisation phase
     organisation = Organisation(
-        os.path.join("var", "cache", "organisation.csv"), Path(pipeline.path)
+        os.path.join(cache_dir, "organisation.csv"), Path(pipeline.path)
     )
 
     # print lookups phase
@@ -171,7 +172,7 @@ def save_resource_unidentified_lookups(
         EntityPrefixPhase(dataset=dataset),
         UnassignedEntries(lookups=flookups),
         SavePhase(
-            path=Path("./var/cache/unassigned-entries.csv"),
+            path=os.path.join(cache_dir, "unassigned-entries.csv"),
             fieldnames=["prefix", "organisation", "reference"],
         ),
     )

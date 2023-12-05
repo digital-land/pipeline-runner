@@ -12,3 +12,4 @@ class Directories:
     PIPELINE_DIR = "pipeline/"
     SPECIFICATION_DIR = "specification/"
     DATASET_RESOURCE_DIR = "var/dataset-resource/"
+    CACHE_DIR = "var/cache"

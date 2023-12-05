@@ -56,6 +56,7 @@ def fetch_response_data(
     dataset_resource_dir,
     pipeline_dir,
     specification_dir,
+    cache_dir,
     additional_col_mappings,
     additional_concats,
 ):
@@ -75,6 +76,7 @@ def fetch_response_data(
             dataset=dataset,
             organisation=organisation,
             pipeline_dir=pipeline_dir,
+            cache_dir=cache_dir,
             specification=specification,
         )
 
@@ -109,24 +111,27 @@ def fetch_response_data(
             issue_dir=os.path.join(issue_dir, dataset),
             column_field_dir=os.path.join(column_field_dir, dataset),
             dataset_resource_dir=os.path.join(dataset_resource_dir, dataset),
-            organisation_path=os.path.join("var", "cache", "organisation.csv"),
+            organisation_path=os.path.join(cache_dir, "organisation.csv"),
             save_harmonised=False,
             organisations=[organisation],
-            custom_temp_dir=os.path.join("var", "cache"),
+            custom_temp_dir=os.path.join(cache_dir),
         )
 
         # build dataset
         dataset_input_path = os.path.join(transformed_dir, dataset, f"{file_name}.csv")
+        with open(dataset_input_path, "r", newline="") as csvfile:
+            reader = csv.DictReader(csvfile)
+            for row in reader:
+                print("1.", row)
         dataset_create(
             input_paths=[dataset_input_path],
             output_path=os.path.join(dataset_dir, f"{dataset}.sqlite3"),
-            organisation_path=os.path.join("var", "cache", "organisation.csv"),
+            organisation_path=os.path.join(cache_dir, "organisation.csv"),
             pipeline=pipeline,
             dataset=dataset,
             specification=specification,
             issue_dir=issue_dir,
         )
-
         dataset_dump(
             os.path.join(dataset_dir, f"{dataset}.sqlite3"),
             os.path.join(dataset_dir, f"{dataset}.csv"),
@@ -262,7 +267,9 @@ def default_output_path(command, input_path):
     return f"{directory}{command}/{resource_from_path(input_path)}.csv"
 
 
-def assign_entries(resource_path, dataset, organisation, pipeline_dir, specification):
+def assign_entries(
+    resource_path, dataset, organisation, pipeline_dir, cache_dir, specification
+):
     """
     assuming that the endpoint is new (strictly it doesn't have to be) then we neeed to assign new entity numbers
     """
@@ -274,10 +281,12 @@ def assign_entries(resource_path, dataset, organisation, pipeline_dir, specifica
         dataset,
         [organisation],
         pipeline_dir=pipeline_dir,
+        cache_dir=cache_dir,
         specification=specification,
     )
     unassigned_entries = []
-    with open("./var/cache/unassigned-entries.csv") as f:
+    unassigned_entries_path = os.path.join(cache_dir, "unassigned-entries.csv")
+    with open(unassigned_entries_path) as f:
         dictreader = csv.DictReader(f)
         for row in dictreader:
             if row["reference"] == "":

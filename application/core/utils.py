@@ -9,7 +9,7 @@ logger = get_logger(__name__)
 tmp_dir = os.path.join(Directories.COLLECTION_DIR + "/resource")
 
 
-def save_uploaded_file(file, dataset):
+def save_uploaded_file(file):
     os.makedirs(tmp_dir, exist_ok=True)
     temp_file_path = None  # Initialize temp_file_path
     try:
