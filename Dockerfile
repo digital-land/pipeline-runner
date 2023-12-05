@@ -5,7 +5,7 @@ WORKDIR /src
 RUN pip install --user -U pip
 RUN pip install --user --no-cache-dir -r requirements/requirements.txt
 
-EXPOSE 5000
+EXPOSE 3000
 
 ENV PATH=/root/.local/bin:$PATH
 ENV MODULE_NAME=application.app
