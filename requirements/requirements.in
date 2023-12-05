@@ -8,4 +8,5 @@ jinja2
 python-multipart
 python-dotenv
 jsonschema
+pre-commit
 -e git+https://github.com/digital-land/pipeline.git#egg=digital-land

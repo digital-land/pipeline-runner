@@ -33,6 +33,8 @@ certifi==2023.11.17
     #   httpx
     #   pyproj
     #   requests
+cfgv==3.4.0
+    # via pre-commit
 charset-normalizer==3.3.2
     # via requests
 click==8.1.7
@@ -47,6 +49,8 @@ dataclasses-json==0.6.3
     # via digital-land
 datasette==0.64.5
     # via digital-land
+distlib==0.3.7
+    # via virtualenv
 esridump==1.13.0
     # via digital-land
 et-xmlfile==1.1.0
@@ -55,6 +59,8 @@ exceptiongroup==1.2.0
     # via anyio
 fastapi==0.104.1
     # via -r requirements/requirements.in
+filelock==3.13.1
+    # via virtualenv
 geojson==3.1.0
     # via digital-land
 gunicorn==21.2.0
@@ -71,6 +77,8 @@ httpx==0.25.2
     #   datasette
 hupper==1.12
     # via datasette
+identify==2.5.32
+    # via pre-commit
 idna==3.6
     # via
     #   anyio
@@ -100,6 +108,8 @@ mergedeep==1.3.4
     # via datasette
 mypy-extensions==1.0.0
     # via typing-inspect
+nodeenv==1.8.0
+    # via pre-commit
 numpy==1.26.2
     # via
     #   pandas
@@ -116,8 +126,12 @@ pandas==2.1.3
     #   digital-land
 pint==0.22
     # via datasette
+platformdirs==4.1.0
+    # via virtualenv
 pluggy==1.3.0
     # via datasette
+pre-commit==3.5.0
+    # via -r requirements/requirements.in
 pydantic==2.5.2
     # via
     #   digital-land
@@ -142,6 +156,7 @@ pyyaml==6.0.1
     # via
     #   datasette
     #   digital-land
+    #   pre-commit
 rdflib==7.0.0
     # via sparqlwrapper
 referencing==0.31.1
@@ -197,6 +212,8 @@ uvicorn==0.24.0.post1
     #   datasette
 validators==0.22.0
     # via digital-land
+virtualenv==20.25.0
+    # via pre-commit
 xlrd==1.2.0
     # via digital-land
 

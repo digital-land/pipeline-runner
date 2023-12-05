@@ -48,6 +48,10 @@ certifi==2023.11.17
     #   httpx
     #   pyproj
     #   requests
+cfgv==3.4.0
+    # via
+    #   -r requirements/requirements.txt
+    #   pre-commit
 charset-normalizer==3.3.2
     # via
     #   -r requirements/requirements.txt
@@ -71,6 +75,10 @@ datasette==0.64.5
     # via
     #   -r requirements/requirements.txt
     #   digital-land
+distlib==0.3.7
+    # via
+    #   -r requirements/requirements.txt
+    #   virtualenv
 esridump==1.13.0
     # via
     #   -r requirements/requirements.txt
@@ -86,6 +94,10 @@ exceptiongroup==1.2.0
     #   pytest
 fastapi==0.104.1
     # via -r requirements/requirements.txt
+filelock==3.13.1
+    # via
+    #   -r requirements/requirements.txt
+    #   virtualenv
 geojson==3.1.0
     # via
     #   -r requirements/requirements.txt
@@ -109,6 +121,10 @@ hupper==1.12
     # via
     #   -r requirements/requirements.txt
     #   datasette
+identify==2.5.32
+    # via
+    #   -r requirements/requirements.txt
+    #   pre-commit
 idna==3.6
     # via
     #   -r requirements/requirements.txt
@@ -156,6 +172,10 @@ mypy-extensions==1.0.0
     # via
     #   -r requirements/requirements.txt
     #   typing-inspect
+nodeenv==1.8.0
+    # via
+    #   -r requirements/requirements.txt
+    #   pre-commit
 numpy==1.26.2
     # via
     #   -r requirements/requirements.txt
@@ -179,11 +199,17 @@ pint==0.22
     # via
     #   -r requirements/requirements.txt
     #   datasette
+platformdirs==4.1.0
+    # via
+    #   -r requirements/requirements.txt
+    #   virtualenv
 pluggy==1.3.0
     # via
     #   -r requirements/requirements.txt
     #   datasette
     #   pytest
+pre-commit==3.5.0
+    # via -r requirements/requirements.txt
 pydantic==2.5.2
     # via
     #   -r requirements/requirements.txt
@@ -226,6 +252,7 @@ pyyaml==6.0.1
     #   -r requirements/requirements.txt
     #   datasette
     #   digital-land
+    #   pre-commit
 rdflib==7.0.0
     # via
     #   -r requirements/requirements.txt
@@ -305,6 +332,10 @@ validators==0.22.0
     # via
     #   -r requirements/requirements.txt
     #   digital-land
+virtualenv==20.25.0
+    # via
+    #   -r requirements/requirements.txt
+    #   pre-commit
 xlrd==1.2.0
     # via
     #   -r requirements/requirements.txt
