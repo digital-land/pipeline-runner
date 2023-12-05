@@ -1,4 +1,4 @@
-# Pipeline Runner API (temporary name)
+# Pipeline Runner API
 
 This repo serves as a way to run a given resource through the pipeline in order to provide validation/information on the data.
 
@@ -14,10 +14,19 @@ This repo serves as a way to run a given resource through the pipeline in order 
     ```
 
 ## Initialisation
-- After cloning this repo, run the following command to download all the dependencies:
+- After cloning this repo, run the following command to set up the repo:
     ```
     make init
     ```
+
+## Adding new dependencies
+- Project dependencies are managed via pip-tools
+- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.in`
+- to install the requirements run:
+    ```
+    make update-dependencies
+    ```
+
 
 ## Start Server
 - To start the server run the following command:
@@ -25,17 +34,9 @@ This repo serves as a way to run a given resource through the pipeline in order 
     make server
     ```
 
-## Adding new dependencies
-- Project dependencies are managed via pip-tools
-- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.`
-- to install the requirements from your requirements.in file run:
-    ```
-    make update-dependencies
-    ```
-
 
 ## Testing
-Testing is done using `pytest` with `playwrite` also being used for the acceptance tests.
+Testing is done using `pytest`
 - To run unit tests run:
     ```
     make test-unit
