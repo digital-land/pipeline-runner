@@ -7,7 +7,6 @@ RUN pip install --user --no-cache-dir -r requirements/requirements.txt
 
 EXPOSE 5000
 
-ENV PATH=/root/.local/bin:$PATH
 ENV MODULE_NAME=application.app
 ARG RELEASE_TAG
 ENV RELEASE_TAG=${RELEASE_TAG}
