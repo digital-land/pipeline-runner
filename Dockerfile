@@ -2,11 +2,11 @@ FROM tiangolo/uvicorn-gunicorn-fastapi:python3.10 AS production
 
 COPY . /src
 WORKDIR /src
-RUN pip install --user -U pip
-RUN pip install --user --no-cache-dir -r requirements/requirements.txt
+
+RUN pip install -U pip
+RUN pip install --no-cache-dir -r requirements/requirements.txt
+RUN make init && make update-dependencies
 
 EXPOSE 5000
 
-ENV MODULE_NAME=application.app
-ARG RELEASE_TAG
-ENV RELEASE_TAG=${RELEASE_TAG}
+CMD ["uvicorn", "application.app:app", "--host", "127.0.0.1", "--port", "5000"]
