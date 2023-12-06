@@ -1,0 +1,21 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://dummy.schema-url.com",
+    "title": "API Run Pipeline Response",
+    "description": "",
+    "type": "object",
+    "properties":{
+      "converted-csv": {
+        "type": "array"
+      },
+      "issue-log": {
+        "type": "array"
+      },
+      "flattened-csv": {
+        "type": "array"
+      },
+      "column-field-log": {
+        "type": "array"
+      }
+    }
+}

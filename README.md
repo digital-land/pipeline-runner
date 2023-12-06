@@ -1,9 +1,9 @@
-# Pipeline Runner API (temporary name)
+# Pipeline Runner API
 
 This repo serves as a way to run a given resource through the pipeline in order to provide validation/information on the data.
 
 ## Prerequisites
-- Python 3.8 or above (?)
+- Python 3.6 or above
 - Create a virtual environment using
     ```
     python3 -m venv --prompt . .venv --clear --upgrade-deps
@@ -14,10 +14,19 @@ This repo serves as a way to run a given resource through the pipeline in order 
     ```
 
 ## Initialisation
-- After cloning this repo, run the following command:
+- After cloning this repo, run the following command to set up the repo:
     ```
     make init
     ```
+
+## Adding new dependencies
+- Project dependencies are managed via pip-tools
+- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.in`
+- to install the requirements run:
+    ```
+    make update-dependencies
+    ```
+
 
 ## Start Server
 - To start the server run the following command:
@@ -25,21 +34,9 @@ This repo serves as a way to run a given resource through the pipeline in order 
     make server
     ```
 
-## Adding new dependencies
-- Project dependencies are managed via pip-tools
-- to add a dependency, write it on a new line in ` /requirements/requirements.in ` or ` /requirements/dev-requirements.in `
-- Then to compile your requirements file and produce a requirements.txt file run:
-    ```
-    make piptool-compile
-    ```
-- Finally, to install the requirements from your requirements.txt file run:
-    ```
-    make dependencies
-    ```
-
 
 ## Testing
-Testing is done using `pytest` with `playwrite` also being used for the acceptance tests.
+Testing is done using `pytest`
 - To run unit tests run:
     ```
     make test-unit

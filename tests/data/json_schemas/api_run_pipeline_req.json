@@ -1,0 +1,25 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "$id": "https://dummy.schema-url.com",
+    "title": "API Run Pipeline Request",
+    "description": "",
+    "type": "object",
+    "properties": {
+      "dataset": {
+        "type": "string",
+        "minLength": 1
+      },
+      "collection": {
+        "type": "string",
+        "minLength": 1
+      },
+      "organisation": {
+        "type": "string",
+        "minLength": 1
+      },
+      "filePath": {
+        "type": "string"
+      }
+    },
+    "required": ["dataset", "collection", "organisation", "filePath"]
+  }

@@ -1,6 +1,3 @@
-uvicorn
-flake8
-black
+-r requirements.txt
 pytest
-pytest-md-report
-pre-commit
+pytest-mock
