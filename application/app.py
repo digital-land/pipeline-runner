@@ -8,6 +8,11 @@ app = FastAPI()
 app.include_router(validation_router.router, prefix="/api/dataset/validate")
 
 
+@app.get("/")
+async def read_root():
+    return {"OK"}
+
+
 @app.get("/health", include_in_schema=False)
 def health():
     try:
