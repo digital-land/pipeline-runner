@@ -1,9 +1,5 @@
 import os
 import csv
-import sys
-from collections import OrderedDict
-import json
-import itertools
 from application.logging.logger import get_logger
 from digital_land.specification import Specification
 from digital_land.log import DatasetResourceLog, IssueLog, ColumnFieldLog
@@ -32,7 +28,6 @@ from digital_land.phase.prune import FieldPrunePhase, EntityPrunePhase, FactPrun
 from digital_land.phase.reference import EntityReferencePhase, FactReferencePhase
 from digital_land.phase.save import SavePhase
 from digital_land.pipeline import run_pipeline, Pipeline
-from digital_land.commands import dataset_dump, dataset_create
 from application.core.lookup_functions import (
     save_resource_unidentified_lookups,
     add_unnassigned_to_lookups,
@@ -117,32 +112,33 @@ def fetch_response_data(
             custom_temp_dir=os.path.join(cache_dir),
         )
 
+        # COMMENTING OUT CREATING THE FLATTENED CSV FOR NOW
         # build dataset
-        dataset_input_path = os.path.join(transformed_dir, dataset, f"{file_name}.csv")
-        with open(dataset_input_path, "r", newline="") as csvfile:
-            reader = csv.DictReader(csvfile)
-            for row in reader:
-                print("1.", row)
-        dataset_create(
-            input_paths=[dataset_input_path],
-            output_path=os.path.join(dataset_dir, f"{dataset}.sqlite3"),
-            organisation_path=os.path.join(cache_dir, "organisation.csv"),
-            pipeline=pipeline,
-            dataset=dataset,
-            specification=specification,
-            issue_dir=issue_dir,
-        )
-        dataset_dump(
-            os.path.join(dataset_dir, f"{dataset}.sqlite3"),
-            os.path.join(dataset_dir, f"{dataset}.csv"),
-        )
-        if os.path.getsize(os.path.join(dataset_dir, f"{dataset}.csv")) != 0:
-            dataset_dump_flattened(
-                os.path.join(dataset_dir, f"{dataset}.csv"),
-                flattened_dir,
-                specification,
-                dataset,
-            )
+        # dataset_input_path = os.path.join(transformed_dir, dataset, f"{file_name}.csv")
+        # with open(dataset_input_path, "r", newline="") as csvfile:
+        #     reader = csv.DictReader(csvfile)
+        #     for row in reader:
+        #         print("1.", row)
+        # dataset_create(
+        #     input_paths=[dataset_input_path],
+        #     output_path=os.path.join(dataset_dir, f"{dataset}.sqlite3"),
+        #     organisation_path=os.path.join(cache_dir, "organisation.csv"),
+        #     pipeline=pipeline,
+        #     dataset=dataset,
+        #     specification=specification,
+        #     issue_dir=issue_dir,
+        # )
+        # dataset_dump(
+        #     os.path.join(dataset_dir, f"{dataset}.sqlite3"),
+        #     os.path.join(dataset_dir, f"{dataset}.csv"),
+        # )
+        # if os.path.getsize(os.path.join(dataset_dir, f"{dataset}.csv")) != 0:
+        #     dataset_dump_flattened(
+        #         os.path.join(dataset_dir, f"{dataset}.csv"),
+        #         flattened_dir,
+        #         specification,
+        #         dataset,
+        #     )
 
 
 def pipeline_run(
@@ -301,49 +297,49 @@ def assign_entries(
         )
 
 
-def dataset_dump_flattened(csv_path, flattened_dir, specification, dataset):
-    if isinstance(csv_path, str):
-        path = Path(csv_path)
-        dataset_name = path.stem
-    elif isinstance(csv_path, Path):
-        dataset_name = csv_path.stem
-    else:
-        # logging.error(f"Can't extract datapackage name from {csv_path}")
-        sys.exit(-1)
+# def dataset_dump_flattened(csv_path, flattened_dir, specification, dataset):
+#     if isinstance(csv_path, str):
+#         path = Path(csv_path)
+#         dataset_name = path.stem
+#     elif isinstance(csv_path, Path):
+#         dataset_name = csv_path.stem
+#     else:
+#         # logging.error(f"Can't extract datapackage name from {csv_path}")
+#         sys.exit(-1)
 
-    flattened_csv_path = os.path.join(flattened_dir, dataset, f"{dataset_name}.csv")
-    with open(csv_path, "r") as read_file, open(flattened_csv_path, "w+") as write_file:
-        reader = csv.DictReader(read_file)
+#     flattened_csv_path = os.path.join(flattened_dir, dataset, f"{dataset_name}.csv")
+#     with open(csv_path, "r") as read_file, open(flattened_csv_path, "w+") as write_file:
+#         reader = csv.DictReader(read_file)
 
-        spec_field_names = [
-            field
-            for field in itertools.chain(
-                *[
-                    specification.current_fieldnames(schema)
-                    for schema in specification.dataset_schema[dataset]
-                ]
-            )
-        ]
-        reader_fieldnames = [
-            field.replace("_", "-")
-            for field in list(reader.fieldnames)
-            if field != "json"
-        ]
+#         spec_field_names = [
+#             field
+#             for field in itertools.chain(
+#                 *[
+#                     specification.current_fieldnames(schema)
+#                     for schema in specification.dataset_schema[dataset]
+#                 ]
+#             )
+#         ]
+#         reader_fieldnames = [
+#             field.replace("_", "-")
+#             for field in list(reader.fieldnames)
+#             if field != "json"
+#         ]
 
-        flattened_field_names = set(spec_field_names).difference(set(reader_fieldnames))
-        # Make sure we put flattened fieldnames last
-        field_names = reader_fieldnames + sorted(list(flattened_field_names))
+#         flattened_field_names = set(spec_field_names).difference(set(reader_fieldnames))
+#         # Make sure we put flattened fieldnames last
+#         field_names = reader_fieldnames + sorted(list(flattened_field_names))
 
-        writer = csv.DictWriter(write_file, fieldnames=field_names)
-        writer.writeheader()
-        entities = []
-        for row in reader:
-            row.pop("geojson", None)
-            row = OrderedDict(row)
-            json_string = row.pop("json") or "{}"
-            row.update(json.loads(json_string))
-            kebab_case_row = dict(
-                [(key.replace("_", "-"), val) for key, val in row.items()]
-            )
-            writer.writerow(kebab_case_row)
-            entities.append(kebab_case_row)
+#         writer = csv.DictWriter(write_file, fieldnames=field_names)
+#         writer.writeheader()
+#         entities = []
+#         for row in reader:
+#             row.pop("geojson", None)
+#             row = OrderedDict(row)
+#             json_string = row.pop("json") or "{}"
+#             row.update(json.loads(json_string))
+#             kebab_case_row = dict(
+#                 [(key.replace("_", "-"), val) for key, val in row.items()]
+#             )
+#             writer.writerow(kebab_case_row)
+#             entities.append(kebab_case_row)
