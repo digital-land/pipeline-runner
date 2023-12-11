@@ -64,10 +64,10 @@ def run_workflow(dataset, organisation, directories=None):
         column_field_json = csv_to_json(
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
-        flattened_json = csv_to_json(
-            os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
-        )
-
+        # flattened_json = csv_to_json(
+        #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
+        # )
+        flattened_json = []
         response_data = {
             "converted-csv": converted_json,
             "issue-log": issue_log_json,
