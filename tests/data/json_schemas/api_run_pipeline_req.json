@@ -19,7 +19,7 @@
       },
       "filePath": {
         "type": "string",
-        "pattern": "^.+\\.(csv|excel|geojson|gml|gpkg)$"
+        "pattern": "^.+\\.(csv|xls|xlsx|geojson|gml|gpkg)$"
       }
     },
     "required": ["dataset", "collection", "organisation", "filePath"]
