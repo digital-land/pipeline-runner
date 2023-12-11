@@ -65,7 +65,7 @@ class JsonSchemaSvc:
                 invalid_file_type = err.instance
                 return (
                     False,
-                    f"Unsupported file type: {invalid_file_type}.",
+                    f"Unsupported file type: {invalid_file_type}."
                     "Please upload a CSV, GeoJSON, GML, or GeoPackage file.",
                 )
             else:
