@@ -18,7 +18,8 @@
         "minLength": 1
       },
       "filePath": {
-        "type": "string"
+        "type": "string",
+        "pattern": "^.+\\.(csv|excel|geojson|gml|gpkg)$"
       }
     },
     "required": ["dataset", "collection", "organisation", "filePath"]
