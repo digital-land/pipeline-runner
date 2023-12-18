@@ -1,0 +1,10 @@
+mappings:
+- field: documentation-url
+  issue-type: invalid URI
+  description: documentation-url must be a real URL
+- field: start-date
+  issue-type: invalid date
+  description: start-date must be a real date
+- field: entry-date
+  issue-type: invalid date
+  description: entry-date must be a real date

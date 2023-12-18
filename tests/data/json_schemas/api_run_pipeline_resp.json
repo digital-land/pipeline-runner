@@ -16,6 +16,9 @@
       },
       "column-field-log": {
         "type": "array"
+      },
+      "required-fields": {
+        "type": "array"
       }
     }
 }
