@@ -68,11 +68,13 @@ def run_workflow(dataset, organisation, directories=None):
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
         # )
         flattened_json = []
+        required_fields = ["reference", "geometry"]
         response_data = {
             "converted-csv": converted_json,
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
+            "required-fields": required_fields,
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}")

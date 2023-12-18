@@ -62,11 +62,9 @@ class JsonSchemaSvc:
             return False, "Failed to load Schema"
         except jsonschema.exceptions.ValidationError as err:
             if "pattern" in err.schema:
-                invalid_file_type = err.instance
                 return (
                     False,
-                    f"Unsupported file type: {invalid_file_type}."
-                    "Please upload a CSV, GeoJSON, GML, or GeoPackage file.",
+                    "The selected file must be a CSV, GeoJSON, GML or GeoPackage file",
                 )
             else:
                 # fix for a bug where property is not populated for
