@@ -119,4 +119,4 @@ def test_run_workflow(mocker, mock_directories, mock_fetch_pipeline_csvs, upload
     assert "issue-log" in response_data
     assert "column-field-log" in response_data
     assert "flattened-csv" in response_data
-    assert "required-fields" in response_data
+    assert "missing-columns" in response_data

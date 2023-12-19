@@ -17,7 +17,7 @@
       "column-field-log": {
         "type": "array"
       },
-      "required-fields": {
+      "missing-columns": {
         "type": "array"
       }
     }

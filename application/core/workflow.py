@@ -48,6 +48,9 @@ def run_workflow(dataset, organisation, directories=None):
             file_path = os.path.join(input_path, file_name)
         resource = resource_from_path(file_path)
 
+        # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
+        required_fields = ["reference", "geometry"]
+
         converted_json = []
         if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
             converted_json = csv_to_json(
@@ -64,17 +67,17 @@ def run_workflow(dataset, organisation, directories=None):
         column_field_json = csv_to_json(
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
+        missing_columns = getMissingColumns(column_field_json, required_fields)
         # flattened_json = csv_to_json(
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
         # )
         flattened_json = []
-        required_fields = ["reference", "geometry"]
         response_data = {
             "converted-csv": converted_json,
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
-            "required-fields": required_fields,
+            "missing-columns": missing_columns,
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}")
@@ -135,3 +138,12 @@ def csv_to_json(csv_file):
                 json_data.append(row)
 
     return json_data
+
+
+def getMissingColumns(column_field_log, required_fields):
+    missing_fields = [
+        field
+        for field in required_fields
+        if not any(entry["field"] == field for entry in column_field_log)
+    ]
+    return missing_fields
