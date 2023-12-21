@@ -67,7 +67,7 @@ def run_workflow(dataset, organisation, directories=None):
         column_field_json = csv_to_json(
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
-        missing_columns = getMissingColumns(column_field_json, required_fields)
+        updateColumnFieldLog(column_field_json, required_fields)
         # flattened_json = csv_to_json(
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
         # )
@@ -77,7 +77,6 @@ def run_workflow(dataset, organisation, directories=None):
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
-            "missing-columns": missing_columns,
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}")
@@ -140,10 +139,7 @@ def csv_to_json(csv_file):
     return json_data
 
 
-def getMissingColumns(column_field_log, required_fields):
-    missing_fields = [
-        field
-        for field in required_fields
-        if not any(entry["field"] == field for entry in column_field_log)
-    ]
-    return missing_fields
+def updateColumnFieldLog(column_field_log, required_fields):
+    for field in required_fields:
+        if not any(entry["field"] == field for entry in column_field_log):
+            column_field_log.append({"field": field, "missing": True})

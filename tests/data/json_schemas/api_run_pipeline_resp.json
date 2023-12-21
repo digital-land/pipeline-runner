@@ -16,9 +16,6 @@
       },
       "column-field-log": {
         "type": "array"
-      },
-      "missing-columns": {
-        "type": "array"
       }
     }
 }
