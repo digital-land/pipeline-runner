@@ -1,6 +1,7 @@
 import os
 import csv
 import urllib
+import yaml
 from urllib.error import HTTPError
 import shutil
 from application.logging.logger import get_logger
@@ -48,6 +49,10 @@ def run_workflow(dataset, organisation, directories=None):
             file_path = os.path.join(input_path, file_name)
         resource = resource_from_path(file_path)
 
+        # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
+        required_fields_path = os.path.join("config/mandatory_fields.yaml")
+        required_fields = getMandatoryFields(required_fields_path, dataset)
+
         converted_json = []
         if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
             converted_json = csv_to_json(
@@ -64,17 +69,16 @@ def run_workflow(dataset, organisation, directories=None):
         column_field_json = csv_to_json(
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
+        updateColumnFieldLog(column_field_json, required_fields)
         # flattened_json = csv_to_json(
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
         # )
         flattened_json = []
-        required_fields = ["reference", "geometry"]
         response_data = {
             "converted-csv": converted_json,
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
-            "required-fields": required_fields,
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}")
@@ -135,3 +139,26 @@ def csv_to_json(csv_file):
                 json_data.append(row)
 
     return json_data
+
+
+def updateColumnFieldLog(column_field_log, required_fields):
+    for field in required_fields:
+        if not any(entry["field"] == field for entry in column_field_log):
+            column_field_log.append({"field": field, "missing": True})
+        else:
+            for entry in column_field_log:
+                if entry["field"] == field:
+                    entry["missing"] = False
+
+    # Updating all the other column field entires to missing:False
+    for entry in column_field_log:
+        field = entry.get("field")
+        if field not in required_fields:
+            entry["missing"] = False
+
+
+def getMandatoryFields(required_fields_path, dataset):
+    with open(required_fields_path, "r") as f:
+        data = yaml.safe_load(f)
+    required_fields = data.get(dataset, [])
+    return required_fields
