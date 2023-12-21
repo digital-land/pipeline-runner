@@ -28,12 +28,11 @@ def test_updateColumnFieldLog():
         entry["field"] == "geometry" and entry["missing"] for entry in column_field_log
     )
     assert any(
-        entry["field"] == "documentation-url" and "missing" not in entry
+        entry["field"] == "documentation-url" and not entry["missing"]
         for entry in column_field_log
     )
     assert any(
-        entry["field"] == "name" and "missing" not in entry
-        for entry in column_field_log
+        entry["field"] == "name" and not entry["missing"] for entry in column_field_log
     )
 
 
@@ -51,10 +50,10 @@ def test_updateColumnFieldLog_no_missing_fields():
     updateColumnFieldLog(column_field_log, required_fields)
     assert len(column_field_log) == 3
     assert any(
-        entry["field"] == "geometry" and "missing" not in entry
+        entry["field"] == "geometry" and not entry["missing"]
         for entry in column_field_log
     )
     assert any(
-        entry["field"] == "reference" and "missing" not in entry
+        entry["field"] == "reference" and not entry["missing"]
         for entry in column_field_log
     )

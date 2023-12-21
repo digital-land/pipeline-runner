@@ -145,6 +145,16 @@ def updateColumnFieldLog(column_field_log, required_fields):
     for field in required_fields:
         if not any(entry["field"] == field for entry in column_field_log):
             column_field_log.append({"field": field, "missing": True})
+        else:
+            for entry in column_field_log:
+                if entry["field"] == field:
+                    entry["missing"] = False
+
+    # Updating all the other column field entires to missing:False
+    for entry in column_field_log:
+        field = entry.get("field")
+        if field not in required_fields:
+            entry["missing"] = False
 
 
 def getMandatoryFields(required_fields_path, dataset):
