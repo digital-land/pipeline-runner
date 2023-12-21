@@ -1,40 +1,60 @@
-# from application.core.workflow import updateColumnFieldLog
+from application.core.workflow import updateColumnFieldLog
 
 
-# def test_getMissingColumns_no_missing_fields():
-#     column_field_log = [
-#         {
-#             "dataset": "conservation-area",
-#             "column": "documentation-url",
-#             "field": "documentation-url",
-#         },
-#         {"dataset": "conservation-area", "column": "geometry", "field": "geometry"},
-#         {"dataset": "conservation-area", "column": "reference", "field": "reference"},
-#     ]
-#     required_fields = ["reference", "geometry"]
-#     assert updateColumnFieldLog(column_field_log, required_fields) == []
+def test_updateColumnFieldLog():
+    column_field_log = [
+        {
+            "dataset": "conservation-area",
+            "column": "documentation-url",
+            "field": "documentation-url",
+        },
+        {
+            "dataset": "conservation-area",
+            "column": "name",
+            "field": "name",
+        },
+    ]
+
+    required_fields = ["reference", "geometry"]
+
+    assert len(column_field_log) == 2
+    updateColumnFieldLog(column_field_log, required_fields)
+
+    assert len(column_field_log) == 4  # Two new entries added
+    assert any(
+        entry["field"] == "reference" and entry["missing"] for entry in column_field_log
+    )
+    assert any(
+        entry["field"] == "geometry" and entry["missing"] for entry in column_field_log
+    )
+    assert any(
+        entry["field"] == "documentation-url" and "missing" not in entry
+        for entry in column_field_log
+    )
+    assert any(
+        entry["field"] == "name" and "missing" not in entry
+        for entry in column_field_log
+    )
 
 
-# def test_getMissingColumns_some_missing_fields():
-#     column_field_log = [
-#         {
-#             "dataset": "conservation-area",
-#             "column": "documentation-url",
-#             "field": "documentation-url",
-#         },
-#         {"dataset": "conservation-area", "column": "geometry", "field": "geometry"},
-#     ]
-#     required_fields = ["reference", "geometry", "other_field"]
-#     assert updateColumnFieldLog(column_field_log, required_fields) == [
-#         "reference",
-#         "other_field",
-#     ]
-
-
-# def test_getMissingColumns_all_missing_fields():
-#     column_field_log = []
-#     required_fields = ["reference", "geometry"]
-#     assert updateColumnFieldLog(column_field_log, required_fields) == [
-#         "reference",
-#         "geometry",
-#     ]
+def test_updateColumnFieldLog_no_missing_fields():
+    column_field_log = [
+        {
+            "dataset": "conservation-area",
+            "column": "documentation-url",
+            "field": "documentation-url",
+        },
+        {"dataset": "conservation-area", "column": "geometry", "field": "geometry"},
+        {"dataset": "conservation-area", "column": "reference", "field": "reference"},
+    ]
+    required_fields = ["reference", "geometry"]
+    updateColumnFieldLog(column_field_log, required_fields)
+    assert len(column_field_log) == 3
+    assert any(
+        entry["field"] == "geometry" and "missing" not in entry
+        for entry in column_field_log
+    )
+    assert any(
+        entry["field"] == "reference" and "missing" not in entry
+        for entry in column_field_log
+    )
