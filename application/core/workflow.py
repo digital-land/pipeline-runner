@@ -1,6 +1,7 @@
 import os
 import csv
 import urllib
+import yaml
 from urllib.error import HTTPError
 import shutil
 from application.logging.logger import get_logger
@@ -49,7 +50,8 @@ def run_workflow(dataset, organisation, directories=None):
         resource = resource_from_path(file_path)
 
         # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
-        required_fields = ["reference", "geometry"]
+        required_fields_path = os.path.join("config/mandatory_fields.yaml")
+        required_fields = getMandatoryFields(required_fields_path, dataset)
 
         converted_json = []
         if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
@@ -143,3 +145,10 @@ def updateColumnFieldLog(column_field_log, required_fields):
     for field in required_fields:
         if not any(entry["field"] == field for entry in column_field_log):
             column_field_log.append({"field": field, "missing": True})
+
+
+def getMandatoryFields(required_fields_path, dataset):
+    with open(required_fields_path, "r") as f:
+        data = yaml.safe_load(f)
+    required_fields = data.get(dataset, [])
+    return required_fields
