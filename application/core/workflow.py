@@ -50,7 +50,7 @@ def run_workflow(dataset, organisation, directories=None):
         resource = resource_from_path(file_path)
 
         # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
-        required_fields_path = os.path.join("config/mandatory_fields.yaml")
+        required_fields_path = os.path.join("configs/mandatory_fields.yaml")
         required_fields = getMandatoryFields(required_fields_path, dataset)
 
         converted_json = []
