@@ -40,7 +40,6 @@ def run_workflow(dataset, organisation, directories=None):
             additional_col_mappings=additional_column_mappings,
             additional_concats=additional_concats,
         )
-
         input_path = os.path.join(directories.COLLECTION_DIR, "resource")
         # List all files in the "resource" directory
         files_in_resource = os.listdir(input_path)
@@ -48,7 +47,6 @@ def run_workflow(dataset, organisation, directories=None):
         for file_name in files_in_resource:
             file_path = os.path.join(input_path, file_name)
         resource = resource_from_path(file_path)
-
         # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
         required_fields_path = os.path.join("configs/mandatory_fields.yaml")
         required_fields = getMandatoryFields(required_fields_path, dataset)
@@ -128,15 +126,18 @@ def csv_to_json(csv_file):
 
     if os.path.isfile(csv_file):
         # Open the CSV file for reading
-        with open(csv_file, "r") as csv_input:
-            # Read the CSV data
-            csv_data = csv.DictReader(csv_input)
+        try:
+            with open(csv_file, "r") as csv_input:
+                # Read the CSV data
+                csv_data = csv.DictReader(csv_input)
 
-            # Convert CSV to a list of dictionaries
-            data_list = list(csv_data)
+                # Convert CSV to a list of dictionaries
+                data_list = list(csv_data)
 
-            for row in data_list:
-                json_data.append(row)
+                for row in data_list:
+                    json_data.append(row)
+        except Exception as err:
+            logger.error("Cannot process file as CSV :", str(err))
 
     return json_data
 
