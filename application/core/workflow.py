@@ -136,8 +136,8 @@ def csv_to_json(csv_file):
 
                 for row in data_list:
                     json_data.append(row)
-        except Exception as err:
-            logger.error("Cannot process file as CSV :", str(err))
+        except Exception:
+            logger.error("Cannot process file as CSV ")
 
     return json_data
 
