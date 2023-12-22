@@ -292,9 +292,7 @@ def assign_entries(
 
     # if unassigned_entries is not None
     if len(unassigned_entries) > 0:
-        add_unnassigned_to_lookups(
-            unassigned_entries, lookup_path, dataset, specification
-        )
+        print("hello")
 
 
 # def dataset_dump_flattened(csv_path, flattened_dir, specification, dataset):
