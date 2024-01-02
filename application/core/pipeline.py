@@ -27,12 +27,8 @@ from digital_land.phase.prefix import EntityPrefixPhase
 from digital_land.phase.prune import FieldPrunePhase, EntityPrunePhase, FactPrunePhase
 from digital_land.phase.reference import EntityReferencePhase, FactReferencePhase
 from digital_land.phase.save import SavePhase
-from digital_land.pipeline import run_pipeline, Pipeline
-from application.core.lookup_functions import (
-    save_resource_unidentified_lookups,
-    add_unnassigned_to_lookups,
-)
-
+from digital_land.pipeline import run_pipeline, Pipeline, Lookups
+from digital_land.commands import get_resource_unidentified_lookups
 
 from pathlib import Path
 
@@ -63,17 +59,19 @@ def fetch_response_data(
     # List all files in the "resource" directory
     files_in_resource = os.listdir(input_path)
     os.makedirs(os.path.join(issue_dir, dataset), exist_ok=True)
-    for file_name in files_in_resource:
-        file_path = os.path.join(input_path, file_name)
-        # retrieve unnassigned entities and assign
-        assign_entries(
-            resource_path=file_path,
-            dataset=dataset,
-            organisation=organisation,
-            pipeline_dir=pipeline_dir,
-            cache_dir=cache_dir,
-            specification=specification,
-        )
+    try:
+        for file_name in files_in_resource:
+            file_path = os.path.join(input_path, file_name)
+            # retrieve unnassigned entities and assign
+            assign_entries(
+                resource_path=file_path,
+                dataset=dataset,
+                organisation=organisation,
+                pipeline_dir=pipeline_dir,
+                specification=specification,
+            )
+    except Exception as err:
+        logger.error("An exception occured during assign_entries process: ", str(err))
 
     # Create directories if they don't exist
     for directory in [
@@ -97,20 +95,23 @@ def fetch_response_data(
         os.makedirs(os.path.join(column_field_dir, dataset), exist_ok=True)
         os.makedirs(os.path.join(dataset_resource_dir, dataset), exist_ok=True)
 
-        pipeline_run(
-            dataset=dataset,
-            pipeline=pipeline,
-            specification_dir=specification_dir,
-            input_path=file_path,
-            output_path=os.path.join(transformed_dir, dataset, f"{file_name}.csv"),
-            issue_dir=os.path.join(issue_dir, dataset),
-            column_field_dir=os.path.join(column_field_dir, dataset),
-            dataset_resource_dir=os.path.join(dataset_resource_dir, dataset),
-            organisation_path=os.path.join(cache_dir, "organisation.csv"),
-            save_harmonised=False,
-            organisations=[organisation],
-            custom_temp_dir=os.path.join(cache_dir),
-        )
+        try:
+            pipeline_run(
+                dataset=dataset,
+                pipeline=pipeline,
+                specification_dir=specification_dir,
+                input_path=file_path,
+                output_path=os.path.join(transformed_dir, dataset, f"{file_name}.csv"),
+                issue_dir=os.path.join(issue_dir, dataset),
+                column_field_dir=os.path.join(column_field_dir, dataset),
+                dataset_resource_dir=os.path.join(dataset_resource_dir, dataset),
+                organisation_path=os.path.join(cache_dir, "organisation.csv"),
+                save_harmonised=False,
+                organisations=[organisation],
+                custom_temp_dir=os.path.join(cache_dir),
+            )
+        except Exception as err:
+            logger.error("An exception occured during pipeline_run: ", str(err))
 
         # COMMENTING OUT CREATING THE FLATTENED CSV FOR NOW
         # build dataset
@@ -181,6 +182,7 @@ def pipeline_run(
     organisation = Organisation(organisation_path, Path(pipeline.path))
 
     severity_csv_path = os.path.join(specification_dir, "issue-type.csv")
+    mapping_path = os.path.join("configs/mapping.yaml")
     # resource specific default values
     if len(organisations) == 1:
         default_values["organisation"] = organisations[0]
@@ -249,6 +251,10 @@ def pipeline_run(
 
     # Add the 'severity' and 'description' column based on the mapping
     issue_log.add_severity_column(severity_csv_path)
+
+    # Changing Error message description according to field
+    issue_log.appendErrorMessage(mapping_path)
+
     issue_log.save(os.path.join(issue_dir, resource + ".csv"))
     column_field_log.save(os.path.join(column_field_dir, resource + ".csv"))
     dataset_resource_log.save(os.path.join(dataset_resource_dir, resource + ".csv"))
@@ -263,38 +269,43 @@ def default_output_path(command, input_path):
     return f"{directory}{command}/{resource_from_path(input_path)}.csv"
 
 
-def assign_entries(
-    resource_path, dataset, organisation, pipeline_dir, cache_dir, specification
-):
-    """
-    assuming that the endpoint is new (strictly it doesn't have to be) then we neeed to assign new entity numbers
-    """
-
-    # define log
-    lookup_path = os.path.join(pipeline_dir, "lookup.csv")
-    save_resource_unidentified_lookups(
+def assign_entries(resource_path, dataset, organisation, pipeline_dir, specification):
+    pipeline = Pipeline(pipeline_dir, dataset)
+    resource_lookups = get_resource_unidentified_lookups(
         resource_path,
         dataset,
-        [organisation],
-        pipeline_dir=pipeline_dir,
-        cache_dir=cache_dir,
+        organisations=[organisation],
+        pipeline=pipeline,
         specification=specification,
     )
     unassigned_entries = []
-    unassigned_entries_path = os.path.join(cache_dir, "unassigned-entries.csv")
-    with open(unassigned_entries_path) as f:
-        dictreader = csv.DictReader(f)
-        for row in dictreader:
-            if row["reference"] == "":
-                logger.info("The 'reference' column is empty")
-            else:
-                unassigned_entries.append(row)
+    unassigned_entries.append(resource_lookups)
 
-    # if unassigned_entries is not None
-    if len(unassigned_entries) > 0:
-        add_unnassigned_to_lookups(
-            unassigned_entries, lookup_path, dataset, specification
-        )
+    lookups = Lookups(pipeline_dir)
+    # Check if the lookups file exists, create it if not
+    if not os.path.exists(lookups.lookups_path):
+        with open(lookups.lookups_path, "w", newline="") as f:
+            writer = csv.writer(f)
+            writer.writerow(
+                ["prefix", "resource", "organisation", "reference", "entity"]
+            )
+
+    lookups.load_csv()
+    for new_lookup in unassigned_entries:
+        for idx, entry in enumerate(new_lookup):
+            lookups.add_entry(entry[0])
+
+    # save edited csvs
+    max_entity_num = lookups.get_max_entity(pipeline.name)
+    lookups.entity_num_gen.state["current"] = max_entity_num
+    lookups.entity_num_gen.state["range_max"] = specification.get_dataset_entity_max(
+        dataset
+    )
+    lookups.entity_num_gen.state["range_min"] = specification.get_dataset_entity_min(
+        dataset
+    )
+
+    lookups.save_csv()
 
 
 # def dataset_dump_flattened(csv_path, flattened_dir, specification, dataset):
