@@ -1,10 +1,34 @@
 mappings:
 - field: documentation-url
   issue-type: invalid URI
-  description: documentation-url must be a real URL
+  description: Documentation URL must be a real URL
+- field: document-url
+  issue-type: invalid URI
+  description: Document URL must be a real URL
 - field: start-date
   issue-type: invalid date
-  description: start-date must be a real date
+  description: Start date must be a real date
 - field: entry-date
   issue-type: invalid date
-  description: entry-date must be a real date
+  description: Entry date must be a real date
+- field: end-date
+  issue-type: invalid date
+  description: End date must be a real date
+- field: geometry
+  issue-type: OSGB out of bounds of England
+  description: Geometry must be in England
+- field: geometry
+  issue-type: Unexpected geom type
+  description: Geometry must be a point or polygon
+- field: geometry
+  issue-type: Unexpected geom type within GeometryCollection
+  description: Geometry must be a polygon
+- field: geometry
+  issue-type: WGS84 out of bounds
+  description: Geometry must be in England
+- field: geometry
+  issue-type: WGS84 out of bounds of England
+  description: Geometry must be in England
+- field: entry-date
+  issue-type: future entry-date
+  description: Entry date must be today or in the past
