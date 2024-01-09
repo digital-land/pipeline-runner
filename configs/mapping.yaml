@@ -36,7 +36,7 @@ mappings:
   issue-type: invalid coordinates
   description: Geometry must use WGS84, OSGB or Mercator coordinates
 - field: geometry
-  issue-type: invalid geometry not fixable
+  issue-type: invalid geometry - not fixable
   description: Geometry must be correctly formatted
 - field: entry-date
   issue-type: future entry-date
