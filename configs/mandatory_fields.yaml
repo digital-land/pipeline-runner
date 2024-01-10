@@ -3,6 +3,9 @@ article-4-direction:
 article-4-direction-area:
 - reference
 - geometry
+- name
+- permitted-development-rights
 conservation-area:
 - reference
 - geometry
+- name
