@@ -2,42 +2,70 @@ mappings:
 - field: documentation-url
   issue-type: invalid URI
   description: Documentation URL must be a real URL
+  summary-singular: There is an 'invalid URI' issue with the documentation URL.
+  summary-plural: There are {count} 'invalid URI' issues with the documentation URL.
 - field: document-url
   issue-type: invalid URI
   description: Document URL must be a real URL
+  summary-singular: There is an 'invalid URI' issue with the document URL.
+  summary-plural: There are {count} 'invalid URI' issues with the document URL.
 - field: start-date
   issue-type: invalid date
   description: Start date must be a real date
+  summary-singular: There is an 'invalid date' issue with the start date.
+  summary-plural: There are {count} 'invalid date' issues with the start date.
 - field: entry-date
   issue-type: invalid date
   description: Entry date must be a real date
+  summary-singular: There is an 'invalid date' issue with the entry date.
+  summary-plural: There are {count} 'invalid date' issues with the entry date.
 - field: end-date
   issue-type: invalid date
   description: End date must be a real date
+  summary-singular: There is an 'invalid date' issue with the end date.
+  summary-plural: There are {count} 'invalid date' issues with the end date.
 - field: geometry
   issue-type: OSGB out of bounds of England
   description: Geometry must be in England
+  summary-singular: There is an 'OSGB out of bounds of England' issue with the geometry.
+  summary-plural: There are {count} 'OSGB out of bounds of England' issues with the geometry.
 - field: geometry
   issue-type: Unexpected geom type
   description: Geometry must be a point or polygon
+  summary-singular: There is an 'Unexpected geom type' issue with the geometry.
+  summary-plural: There are {count} 'Unexpected geom type' issues with the geometry.
 - field: geometry
   issue-type: Unexpected geom type within GeometryCollection
   description: Geometry must be a polygon
+  summary-singular: There is an 'Unexpected geom type within GeometryCollection' issue with the geometry.
+  summary-plural: There are {count} 'Unexpected geom type within GeometryCollection' issues with the geometry.
 - field: geometry
   issue-type: WGS84 out of bounds
   description: Geometry must be in England
+  summary-singular: There is a 'WGS84 out of bounds' issue with the geometry.
+  summary-plural: There are {count} 'WGS84 out of bounds' issues with the geometry.
 - field: geometry
   issue-type: WGS84 out of bounds of England
   description: Geometry must be in England
+  summary-singular: There is a 'WGS84 out of bounds of England' issue with the geometry.
+  summary-plural: There are {count} 'WGS84 out of bounds of England' issues with the geometry.
 - field: geometry
   issue-type: invalid WKT
   description: Geometry must be in Well-Known Text (WKT) format
+  summary-singular: There is an 'invalid WKT' issue with the geometry.
+  summary-plural: There are {count} 'invalid WKT' issues with the geometry.
 - field: geometry
   issue-type: invalid coordinates
   description: Geometry must use WGS84, OSGB or Mercator coordinates
+  summary-singular: There is an 'invalid coordinates' issue with the geometry.
+  summary-plural: There are {count} 'invalid coordinates' issues with the geometry.
 - field: geometry
   issue-type: invalid geometry - not fixable
   description: Geometry must be correctly formatted
+  summary-singular: There is an 'invalid geometry - not fixable' issue with the geometry.
+  summary-plural: There are {count} 'invalid geometry - not fixable' issues with the geometry.
 - field: entry-date
   issue-type: future entry-date
   description: Entry date must be today or in the past
+  summary-singular: There is a 'future entry-date' issue with the entry date.
+  summary-plural: There are {count} 'future entry-date' issues with the entry date.
