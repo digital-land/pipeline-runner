@@ -1,4 +1,4 @@
-from application.core.workflow import updateColumnFieldLog
+from application.core.workflow import updateColumnFieldLog, error_summary
 
 
 def test_updateColumnFieldLog():
@@ -57,3 +57,50 @@ def test_updateColumnFieldLog_no_missing_fields():
         entry["field"] == "reference" and not entry["missing"]
         for entry in column_field_log
     )
+
+
+def test_error_summary():
+    issue_log = [
+        {
+            "dataset": "conservation-area",
+            "resource": "d5b003b74563bb5bcf06742ee27f9dd573a47a123f8f5d975d9e04187fa58eff",
+            "line-number": "2",
+            "entry-number": "1",
+            "field": "geometry",
+            "issue-type": "OSGB out of bounds of England",
+            "value": "",
+            "severity": "error",
+            "description": "Geometry must be in England",
+        },
+        {
+            "dataset": "conservation-area",
+            "resource": "d5b003b74563bb5bcf06742ee27f9dd573a47a123f8f5d975d9e04187fa58eff",
+            "line-number": "3",
+            "entry-number": "2",
+            "field": "geometry",
+            "issue-type": "OSGB out of bounds of England",
+            "value": "",
+            "severity": "error",
+            "description": "Geometry must be in England",
+        },
+        {
+            "dataset": "conservation-area",
+            "resource": "d5b003b74563bb5bcf06742ee27f9dd573a47a123f8f5d975d9e04187fa58eff",
+            "line-number": "3",
+            "entry-number": "2",
+            "field": "start-date",
+            "issue-type": "invalid date",
+            "value": "40/04/2024",
+            "severity": "error",
+            "description": "Start date must be a real date",
+        },
+    ]
+    column_field_log = [{"field": "reference", "missing": True}]
+    json_data = error_summary(issue_log, column_field_log)
+    expected_messages = [
+        "2 geometries must be in England",
+        "1 start date must be a real date",
+        "Reference column missing",
+    ]
+
+    assert any(message in json_data for message in expected_messages)

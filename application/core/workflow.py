@@ -7,6 +7,7 @@ import shutil
 from application.logging.logger import get_logger
 from application.core.pipeline import fetch_response_data, resource_from_path
 from application.core.config import Directories, source_url
+from collections import defaultdict
 
 
 logger = get_logger(__name__)
@@ -49,8 +50,8 @@ def run_workflow(dataset, organisation, directories=None):
         resource = resource_from_path(file_path)
         # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
         required_fields_path = os.path.join("configs/mandatory_fields.yaml")
-        required_fields = getMandatoryFields(required_fields_path, dataset)
 
+        required_fields = getMandatoryFields(required_fields_path, dataset)
         converted_json = []
         if os.path.exists(os.path.join(directories.CONVERTED_DIR, f"{resource}.csv")):
             converted_json = csv_to_json(
@@ -68,6 +69,8 @@ def run_workflow(dataset, organisation, directories=None):
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
         updateColumnFieldLog(column_field_json, required_fields)
+        json_data = error_summary(issue_log_json, column_field_json)
+
         # flattened_json = csv_to_json(
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
         # )
@@ -77,6 +80,7 @@ def run_workflow(dataset, organisation, directories=None):
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
+            "error-summary": json_data,
         }
     except Exception as e:
         logger.error(f"An error occurred: {e}")
@@ -163,3 +167,63 @@ def getMandatoryFields(required_fields_path, dataset):
         data = yaml.safe_load(f)
     required_fields = data.get(dataset, [])
     return required_fields
+
+
+def load_mappings(file_path):
+    with open(file_path, "r") as yaml_file:
+        mappings_data = yaml.safe_load(yaml_file)
+
+    mappings = mappings_data.get("mappings", [])
+    mapping_dict = {
+        (mapping["field"], mapping["issue-type"]): mapping for mapping in mappings
+    }
+    return mapping_dict
+
+
+def error_summary(issue_log, column_field):
+    error_issues = [issue for issue in issue_log if issue["severity"] == "error"]
+    missing_columns = [field for field in column_field if field["missing"]]
+
+    # Count occurrences for each issue-type and field
+    error_summary = defaultdict(int)
+    for issue in error_issues:
+        field = issue["field"]
+        issue_type = issue["issue-type"]
+        error_summary[(issue_type, field)] += 1
+
+    # fetch missing columns
+    for column in missing_columns:
+        field = column["field"]
+        error_summary[("missing", field)] = True
+
+    # Convert error summary to JSON with formatted messages
+    json_data = convert_error_summary_to_json(error_summary)
+    return json_data
+
+
+def convert_error_summary_to_json(error_summary):
+    # Load mappings
+    mappings_file_path = os.path.join("configs/mapping.yaml")
+    mappings = load_mappings(mappings_file_path)
+
+    json_data = []
+    for key, count in error_summary.items():
+        if isinstance(key, tuple):
+            issue_type, field = key
+            mapping = mappings.get((field, issue_type))
+            if mapping:
+                summary_template = mapping.get("summary-singular", "")
+                summary_template_plural = mapping.get("summary-plural", "")
+                if summary_template or summary_template_plural:
+                    summary_template_to_use = (
+                        summary_template_plural if count > 1 else summary_template
+                    )
+                    message = summary_template_to_use.format(
+                        count=count, issue_type=issue_type, field=field
+                    )
+                    json_data.append(message)
+            else:
+                message = f"{field.capitalize()} column missing"
+                json_data.append(message)
+
+    return json_data
