@@ -13,7 +13,7 @@ from collections import defaultdict
 logger = get_logger(__name__)
 
 
-def run_workflow(dataset, organisation, directories=None):
+def run_workflow(collection, dataset, organisation, directories=None):
     additional_column_mappings = None
     additional_concats = None
 
@@ -23,7 +23,7 @@ def run_workflow(dataset, organisation, directories=None):
     try:
         # pipeline directory structure & download
         pipeline_dir = os.path.join(directories.PIPELINE_DIR)
-        fetch_pipeline_csvs(dataset, pipeline_dir)
+        fetch_pipeline_csvs(collection, pipeline_dir)
 
         fetch_response_data(
             dataset,
@@ -101,15 +101,18 @@ def run_workflow(dataset, organisation, directories=None):
     return response_data
 
 
-def fetch_pipeline_csvs(dataset, pipeline_dir):
+def fetch_pipeline_csvs(collection, pipeline_dir):
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
     ]
     for pipeline_csv in pipeline_csvs:
         try:
+            print(
+                f"{source_url}/{collection + '-collection'}/main/pipeline/{pipeline_csv}"
+            )
             urllib.request.urlretrieve(
-                f"{source_url}/{dataset + '-collection'}/main/pipeline/{pipeline_csv}",
+                f"{source_url}/{collection + '-collection'}/main/pipeline/{pipeline_csv}",
                 os.path.join(pipeline_dir, pipeline_csv),
             )
         except HTTPError as e:

@@ -9,3 +9,11 @@ conservation-area:
 - reference
 - geometry
 - name
+tree-preservation-zone:
+- reference
+- geometry
+listed-building-outline:
+- reference
+- geometry
+- name
+- listed-building
