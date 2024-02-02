@@ -86,7 +86,7 @@ def mock_fetch_pipeline_csvs(tmpdir, mock_directories):
     # create a mock column.csv in the pipeline folder
     mock_column_csv = os.path.join(tmpdir, mock_directories.PIPELINE_DIR, "column.csv")
     row = {
-        "dataset": "conservation-area",
+        "dataset": "article-4-direction-area",
         "resource": "",
         "column": "wkt",
         "field": "geometry",
@@ -99,8 +99,9 @@ def mock_fetch_pipeline_csvs(tmpdir, mock_directories):
 
 
 def test_run_workflow(mocker, mock_directories, mock_fetch_pipeline_csvs, uploaded_csv):
-    dataset = "conservation-area"
-    organisation = "local-authority-eng:CAT"
+    collection = "article-4-direction"
+    dataset = "article-4-direction-area"
+    organisation = ""
 
     source_organisation_csv = "tests/data/csvs/organisation.csv"
     destination_organisation_csv = os.path.join(
@@ -113,7 +114,7 @@ def test_run_workflow(mocker, mock_directories, mock_fetch_pipeline_csvs, upload
         side_effect=mock_fetch_pipeline_csvs,
     )
 
-    response_data = run_workflow(dataset, organisation, mock_directories)
+    response_data = run_workflow(collection, dataset, organisation, mock_directories)
 
     assert "converted-csv" in response_data
     assert "issue-log" in response_data

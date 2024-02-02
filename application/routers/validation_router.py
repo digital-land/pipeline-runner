@@ -26,11 +26,15 @@ async def dataset_validation_request(
         async with req.form() as form:
             req_msg_dict["dataset"] = form["dataset"]
             req_msg_dict["collection"] = form["collection"]
-            req_msg_dict["organisation"] = form["organisation"]
+            if "organisation" in form:
+                req_msg_dict["organisation"] = form["organisation"]
+            else:
+                req_msg_dict["organisation"] = ""
             req_msg_dict["filePath"] = form["upload_file"].filename
             file = form["upload_file"]
             dataset = form["dataset"]
-            organisation = form["organisation"]
+            organisation = req_msg_dict["organisation"]
+            collection = req_msg_dict["collection"]
             # save the uploaded file
             utils.save_uploaded_file(file)
 
@@ -61,5 +65,5 @@ async def dataset_validation_request(
             },
         )
 
-    response_data = workflow.run_workflow(dataset, organisation)
+    response_data = workflow.run_workflow(collection, dataset, organisation)
     return response_data

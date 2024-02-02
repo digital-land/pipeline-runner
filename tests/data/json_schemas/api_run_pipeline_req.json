@@ -15,12 +15,12 @@
       },
       "organisation": {
         "type": "string",
-        "minLength": 1
+        "minLength": 0
       },
       "filePath": {
         "type": "string",
         "pattern": "^.+\\.(csv|xls|xlsx|geojson|json|gml|gpkg)$"
       }
     },
-    "required": ["dataset", "collection", "organisation", "filePath"]
+    "required": ["dataset", "collection", "filePath"]
   }
