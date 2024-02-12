@@ -49,7 +49,9 @@ def get_request(url, verify_ssl=True):
     ) as exception:
         logger.warning(exception)
         response = None
-        log["message"] = type(exception).__name__
+        log["message"] = (
+            "The requested URL could not be downloaded: " + type(exception).__name__
+        )
 
     content = None
     if response is not None:
@@ -59,7 +61,9 @@ def get_request(url, verify_ssl=True):
         ).startswith("text/html"):
             content = response.content
         else:
-            log["message"] = log["status"] + " error"
+            log["message"] = (
+                "The requested URL could not be downloaded: " + log["status"] + " error"
+            )
     return log, content
 
 
