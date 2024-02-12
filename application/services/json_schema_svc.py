@@ -69,7 +69,7 @@ class JsonSchemaSvc:
             else:
                 # fix for a bug where property is not populated for
                 # minLength check
-                if "''" in err.message:
+                if "''" in err.message and err.relative_path:
                     err.message = err.message.replace("''", err.relative_path[0])
                 return (
                     False,

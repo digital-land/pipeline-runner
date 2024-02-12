@@ -23,6 +23,17 @@ GOOD_FORM_DATA = {
     "collection": "conservation-area-collection",
     "organisation": "local-authority-eng:CAT",
 }
+GOOD_URL_DATA = {
+    "dataset": "conservation-area",
+    "collection": "conservation-area-collection",
+    "upload_url": "http://www.example.geojson",
+}
+
+BAD_URL_DATA = {
+    "dataset": "conservation-area",
+    "collection": "conservation-area-collection",
+    "upload_url": "abc",
+}
 
 
 async def json_schema_svc():
@@ -106,3 +117,66 @@ def test_validation_request_with_invalid_data(api_client: TestClient):
     assert ok is True
     assert resp_json["flattened-csv"] == []
     assert resp.status_code == 200
+
+
+def test_validation_request_with_valid_url(api_client: TestClient):
+    endpoint_url = VALIDATE_FILE_REQ_URL
+
+    resp = api_client.post(url=endpoint_url, data=GOOD_URL_DATA)
+    resp_json = resp.json()
+
+    if resp.status_code == 200:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RUN_PIPELINE_RESPONSE
+        )
+    else:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RESPONSE_ERROR
+        )
+
+    assert ok is True
+    assert "ConnectionError" in resp_json["detail"]["errMsg"]
+    assert resp.status_code == 400
+
+
+def test_validation_request_with_invalid_url(api_client: TestClient):
+    endpoint_url = VALIDATE_FILE_REQ_URL
+
+    resp = api_client.post(url=endpoint_url, data=BAD_URL_DATA)
+    resp_json = resp.json()
+
+    if resp.status_code == 200:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RUN_PIPELINE_RESPONSE
+        )
+    else:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RESPONSE_ERROR
+        )
+
+    assert ok is True
+    assert "MissingSchema" in resp_json["detail"]["errMsg"]
+    assert resp.status_code == 400
+
+
+def test_validation_request_no_file(api_client: TestClient):
+    endpoint_url = VALIDATE_FILE_REQ_URL
+
+    resp = api_client.post(url=endpoint_url, data=GOOD_FORM_DATA)
+    resp_json = resp.json()
+
+    if resp.status_code == 200:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RUN_PIPELINE_RESPONSE
+        )
+    else:
+        ok, err_msg = schema_svc.validate_json_dict(
+            resp_json, JSONSchemaMap.API_RESPONSE_ERROR
+        )
+
+    assert ok is True
+    assert (
+        resp_json["detail"]["errMsg"]
+        == "Missing required field: 'upload_file or upload_url'"
+    )
+    assert resp.status_code == 400

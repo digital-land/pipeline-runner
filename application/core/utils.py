@@ -2,7 +2,7 @@ from application.logging.logger import get_logger
 import os
 import hashlib
 from application.core.config import Directories
-
+import requests
 
 logger = get_logger(__name__)
 
@@ -24,3 +24,59 @@ def save_uploaded_file(file):
 
 def hash_value(data):
     return hashlib.sha256(data.encode("utf-8")).hexdigest()
+
+
+def get_request(url, verify_ssl=True):
+    # log["ssl-verify"] = verify_ssl
+    log = {"status": "", "message": ""}
+    try:
+        session = requests.Session()
+        user_agent = "DLUHC Digital Land"
+        response = session.get(
+            url,
+            headers={"User-Agent": user_agent},
+            timeout=120,
+            verify=verify_ssl,
+        )
+    except (
+        requests.exceptions.SSLError,
+        requests.ConnectionError,
+        requests.HTTPError,
+        requests.Timeout,
+        requests.TooManyRedirects,
+        requests.exceptions.MissingSchema,
+        requests.exceptions.ChunkedEncodingError,
+    ) as exception:
+        logger.warning(exception)
+        response = None
+        log["message"] = (
+            "The requested URL could not be downloaded: " + type(exception).__name__
+        )
+
+    content = None
+    if response is not None:
+        log["status"] = str(response.status_code)
+        if log["status"] == "200" and not response.headers.get(
+            "Content-Type", ""
+        ).startswith("text/html"):
+            content = response.content
+        else:
+            log["message"] = (
+                "The requested URL could not be downloaded: " + log["status"] + " error"
+            )
+    return log, content
+
+
+def save_content(content):
+    resource = hashlib.sha256(content).hexdigest()
+    path = os.path.join(tmp_dir, resource)
+    save(path, content)
+    return resource
+
+
+def save(path, data):
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    if not os.path.exists(path):
+        logger.info(path)
+        with open(path, "wb") as f:
+            f.write(data)
