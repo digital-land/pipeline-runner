@@ -69,7 +69,7 @@ def run_workflow(collection, dataset, organisation, directories=None):
             os.path.join(directories.COLUMN_FIELD_DIR, dataset, f"{resource}.csv")
         )
         updateColumnFieldLog(column_field_json, required_fields)
-        json_data = error_summary(issue_log_json, column_field_json)
+        summary_data = error_summary(issue_log_json, column_field_json)
 
         # flattened_json = csv_to_json(
         #     os.path.join(directories.FLATTENED_DIR, dataset, f"{dataset}.csv")
@@ -80,8 +80,9 @@ def run_workflow(collection, dataset, organisation, directories=None):
             "issue-log": issue_log_json,
             "column-field-log": column_field_json,
             "flattened-csv": flattened_json,
-            "error-summary": json_data,
+            "error-summary": summary_data,
         }
+        # logger.info("Error Summary: %s", summary_data)
     except Exception as e:
         logger.error(f"An error occurred: {e}")
 

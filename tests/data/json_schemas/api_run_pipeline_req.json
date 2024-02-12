@@ -18,9 +18,19 @@
         "minLength": 0
       },
       "filePath": {
-        "type": "string",
         "pattern": "^.+\\.(csv|xls|xlsx|geojson|json|gml|gpkg)$"
+      },
+      "urlPath": {
+        "format": "uri"
       }
     },
-    "required": ["dataset", "collection", "filePath"]
+    "oneOf": [
+      {
+        "required": ["filePath"]
+      },
+      {
+        "required": ["urlPath"]
+      }
+    ],
+    "required": ["dataset", "collection"]
   }
