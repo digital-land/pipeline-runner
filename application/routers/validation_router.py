@@ -20,6 +20,10 @@ router = APIRouter()
 async def dataset_validation_request(
     req: Request, schema_svc: JsonSchemaSvc = Depends(get_schema_svc)
 ):
+    raise Exception(
+        "this is a forced exception to check that the frontend is calling the correct api"
+    )
+
     req_msg_dict = {"dataset": "", "collection": "", "organisation": ""}
 
     try:
