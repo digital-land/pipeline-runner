@@ -56,10 +56,15 @@ def get_request(url, verify_ssl=True):
     content = None
     if response is not None:
         log["status"] = str(response.status_code)
-        if log["status"] == "200" and not response.headers.get(
-            "Content-Type", ""
-        ).startswith("text/html"):
-            content = response.content
+        print("status: ", log["status"])
+        print("response: ", response.headers.get("Content-Type"))
+        if log["status"] == "200":
+            if not response.headers.get("Content-Type", "").startswith("text/html"):
+                content = response.content
+            else:
+                log[
+                    "message"
+                ] = "The requested URL leads to a html webpage which we cannot process"
         else:
             log["message"] = (
                 "The requested URL could not be downloaded: " + log["status"] + " error"
