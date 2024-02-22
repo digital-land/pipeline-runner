@@ -59,6 +59,11 @@ mappings:
   description: Geometry missing
   summary-singular: "1 geometry missing"
   summary-plural: "{count} geometries missing"
+- field: point
+  issue-type: missing value
+  description: Geometry missing
+  summary-singular: "1 point missing"
+  summary-plural: "{count} points missing"
 - field: geometry
   issue-type: OSGB out of bounds of England
   description: Geometry must be in England
@@ -66,9 +71,14 @@ mappings:
   summary-plural: "{count} geometries must be in England"
 - field: geometry
   issue-type: Unexpected geom type
-  description: Geometry must be a point or polygon
-  summary-singular: "1 geometry must be a point or polygon"
-  summary-plural: "{count} geometries must be a point or polygon"
+  description: Geometry must be a polygon
+  summary-singular: "1 geometry must be a polygon"
+  summary-plural: "{count} geometries must be a polygon"
+- field: point
+  issue-type: Unexpected geom type
+  description: Geometry must be a point
+  summary-singular: "1 geometry must be a point"
+  summary-plural: "{count} geometries must be a point"
 - field: geometry
   issue-type: Unexpected geom type within GeometryCollection
   description: Geometry must be a polygon
@@ -89,12 +99,27 @@ mappings:
   description: Geometry must be in Well-Known Text (WKT) format
   summary-singular: "1 geometry must be in Well-Known Text (WKT) format"
   summary-plural: "{count} geometries must be in Well-Known Text (WKT) format"
+- field: point
+  issue-type: invalid WKT
+  description: Point must be in Well-Known Text (WKT) format
+  summary-singular: "1 point must be in Well-Known Text (WKT) format"
+  summary-plural: "{count} points must be in Well-Known Text (WKT) format"
 - field: geometry
   issue-type: invalid coordinates
   description: Geometry must use WGS84, OSGB or Mercator coordinates
   summary-singular: "1 geometry must use WGS84, OSGB or Mercator coordinates"
   summary-plural: "{count} geometries must use WGS84, OSGB or Mercator coordinates"
+- field: point
+  issue-type: invalid coordinates
+  description: Point must use WGS84, OSGB or Mercator coordinates
+  summary-singular: "1 point must use WGS84, OSGB or Mercator coordinates"
+  summary-plural: "{count} points must use WGS84, OSGB or Mercator coordinates"
 - field: geometry
+  issue-type: invalid geometry - not fixable
+  description: Geometry must be correctly formatted
+  summary-singular: "1 geometry must be correctly formatted"
+  summary-plural: "{count} geometries must be correctly formatted"
+- field: point
   issue-type: invalid geometry - not fixable
   description: Geometry must be correctly formatted
   summary-singular: "1 geometry must be correctly formatted"
