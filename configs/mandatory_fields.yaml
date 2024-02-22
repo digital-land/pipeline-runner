@@ -17,3 +17,8 @@ listed-building-outline:
 - geometry
 - name
 - listed-building
+tree:
+- reference
+-
+  - point
+  - geometry

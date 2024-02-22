@@ -22,6 +22,9 @@
       },
       "urlPath": {
         "format": "uri"
+      },
+      "geom_type": {
+        "type": "string"
       }
     },
     "oneOf": [
