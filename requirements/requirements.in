@@ -9,4 +9,4 @@ python-multipart
 python-dotenv
 jsonschema
 pre-commit
--e git+https://github.com/digital-land/pipeline.git#egg=digital-land
+-e git+https://github.com/digital-land/pipeline.git@is_point_or_polygon#egg=digital-land
