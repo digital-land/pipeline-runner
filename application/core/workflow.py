@@ -32,7 +32,7 @@ def run_workflow(collection, dataset, organisation, geom_type, directories=None)
             file_path = os.path.join(input_path, file_name)
         resource = resource_from_path(file_path)
 
-        fetch_pipeline_csvs(collection, pipeline_dir, geom_type, resource)
+        fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource)
 
         fetch_response_data(
             dataset,
@@ -104,7 +104,7 @@ def run_workflow(collection, dataset, organisation, geom_type, directories=None)
     return response_data
 
 
-def fetch_pipeline_csvs(collection, pipeline_dir, geom_type, resource):
+def fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource):
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
@@ -119,7 +119,11 @@ def fetch_pipeline_csvs(collection, pipeline_dir, geom_type, resource):
                 os.path.join(pipeline_dir, pipeline_csv),
             )
             try:
-                if geom_type == "polygon" and pipeline_csv == "column.csv":
+                if (
+                    dataset == "tree"
+                    and geom_type == "polygon"
+                    and pipeline_csv == "column.csv"
+                ):
                     new_mapping = f"tree,,{resource},WKT,geometry"
                     with open(
                         os.path.join(pipeline_dir, pipeline_csv), "a"
