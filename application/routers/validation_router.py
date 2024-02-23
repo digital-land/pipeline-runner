@@ -20,7 +20,12 @@ router = APIRouter()
 async def dataset_validation_request(
     req: Request, schema_svc: JsonSchemaSvc = Depends(get_schema_svc)
 ):
-    req_msg_dict = {"dataset": "", "collection": "", "organisation": ""}
+    req_msg_dict = {
+        "dataset": "",
+        "collection": "",
+        "organisation": "",
+        "geom_type": "",
+    }
 
     try:
         async with req.form() as form:
@@ -30,6 +35,11 @@ async def dataset_validation_request(
                 req_msg_dict["organisation"] = form["organisation"]
 
             organisation = req_msg_dict["organisation"]
+
+            if "geom_type" in form:
+                req_msg_dict["geom_type"] = form["geom_type"]
+
+            geom_type = req_msg_dict["geom_type"]
             collection = req_msg_dict["collection"]
             dataset = form["dataset"]
             if "upload_file" in form:
@@ -85,5 +95,5 @@ async def dataset_validation_request(
             },
         )
 
-    response_data = workflow.run_workflow(collection, dataset, organisation)
+    response_data = workflow.run_workflow(collection, dataset, organisation, geom_type)
     return response_data

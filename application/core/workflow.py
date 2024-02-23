@@ -13,7 +13,7 @@ from collections import defaultdict
 logger = get_logger(__name__)
 
 
-def run_workflow(collection, dataset, organisation, directories=None):
+def run_workflow(collection, dataset, organisation, geom_type, directories=None):
     additional_column_mappings = None
     additional_concats = None
 
@@ -23,7 +23,16 @@ def run_workflow(collection, dataset, organisation, directories=None):
     try:
         # pipeline directory structure & download
         pipeline_dir = os.path.join(directories.PIPELINE_DIR)
-        fetch_pipeline_csvs(collection, pipeline_dir)
+
+        input_path = os.path.join(directories.COLLECTION_DIR, "resource")
+        # List all files in the "resource" directory
+        files_in_resource = os.listdir(input_path)
+
+        for file_name in files_in_resource:
+            file_path = os.path.join(input_path, file_name)
+        resource = resource_from_path(file_path)
+
+        fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource)
 
         fetch_response_data(
             dataset,
@@ -41,13 +50,6 @@ def run_workflow(collection, dataset, organisation, directories=None):
             additional_col_mappings=additional_column_mappings,
             additional_concats=additional_concats,
         )
-        input_path = os.path.join(directories.COLLECTION_DIR, "resource")
-        # List all files in the "resource" directory
-        files_in_resource = os.listdir(input_path)
-
-        for file_name in files_in_resource:
-            file_path = os.path.join(input_path, file_name)
-        resource = resource_from_path(file_path)
         # Need to get the mandatory fields from specification/central place. Hardcoding for MVP
         required_fields_path = os.path.join("configs/mandatory_fields.yaml")
 
@@ -102,7 +104,7 @@ def run_workflow(collection, dataset, organisation, directories=None):
     return response_data
 
 
-def fetch_pipeline_csvs(collection, pipeline_dir):
+def fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource):
     os.makedirs(pipeline_dir, exist_ok=True)
     pipeline_csvs = [
         "column.csv",
@@ -116,6 +118,19 @@ def fetch_pipeline_csvs(collection, pipeline_dir):
                 f"{source_url}/{collection + '-collection'}/main/pipeline/{pipeline_csv}",
                 os.path.join(pipeline_dir, pipeline_csv),
             )
+            try:
+                if (
+                    dataset == "tree"
+                    and geom_type == "polygon"
+                    and pipeline_csv == "column.csv"
+                ):
+                    new_mapping = f"tree,,{resource},WKT,geometry"
+                    with open(
+                        os.path.join(pipeline_dir, pipeline_csv), "a"
+                    ) as csv_file:
+                        csv_file.write("\n" + new_mapping)
+            except Exception as e:
+                logger.error(f"Error saving new mapping: {e}")
         except HTTPError as e:
             logger.error(f"Failed to retrieve pipeline CSV: {e}")
 
@@ -151,19 +166,19 @@ def csv_to_json(csv_file):
 
 
 def updateColumnFieldLog(column_field_log, required_fields):
-    for field in required_fields:
-        if not any(entry["field"] == field for entry in column_field_log):
-            column_field_log.append({"field": field, "missing": True})
-        else:
-            for entry in column_field_log:
-                if entry["field"] == field:
-                    entry["missing"] = False
-
-    # Updating all the other column field entires to missing:False
+    # # Updating all the column field entries to missing:False
     for entry in column_field_log:
-        field = entry.get("field")
-        if field not in required_fields:
-            entry["missing"] = False
+        entry.setdefault("missing", False)
+
+    for field in required_fields:
+        found = any(entry["field"] in field for entry in column_field_log)
+        if not found:
+            # Check if the field is a list, and if so, check if at least one element is present
+            if isinstance(field, list):
+                for f in field:
+                    column_field_log.append({"field": f, "missing": True})
+            else:
+                column_field_log.append({"field": field, "missing": True})
 
 
 def getMandatoryFields(required_fields_path, dataset):
@@ -187,7 +202,6 @@ def load_mappings(file_path):
 def error_summary(issue_log, column_field):
     error_issues = [issue for issue in issue_log if issue["severity"] == "error"]
     missing_columns = [field for field in column_field if field["missing"]]
-
     # Count occurrences for each issue-type and field
     error_summary = defaultdict(int)
     for issue in error_issues:
@@ -226,8 +240,10 @@ def convert_error_summary_to_json(error_summary):
                         count=count, issue_type=issue_type, field=field
                     )
                     json_data.append(message)
-            else:
+            elif "missing" in key:
                 message = f"{field.capitalize()} column missing"
                 json_data.append(message)
-
+            else:
+                json_data.append(str(count) + " " + str(key))
+                logger.error("Mapping not found")
     return json_data
