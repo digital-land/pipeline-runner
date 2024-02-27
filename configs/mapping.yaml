@@ -31,14 +31,24 @@ mappings:
   summary-plural: "{count} start dates must be a real date"
 - field: made-date
   issue-type: missing value
-  description: made date missing
+  description: Made date missing
   summary-singular: "1 made date missing"
   summary-plural: "{count} made dates missing"
 - field: made-date
   issue-type: invalid date
-  description: made date must be a real date
+  description: Made date must be a real date
   summary-singular: "1 made date must be a real date"
   summary-plural: "{count} made dates must be a real date"
+- field: confirmed-date
+  issue-type: missing value
+  description: Confirmed date missing
+  summary-singular: "1 confirmed date missing"
+  summary-plural: "{count} confirmed dates missing"
+- field: confirmed-date
+  issue-type: invalid date
+  description: Confirmed date must be a real date
+  summary-singular: "1 confirmed date must be a real date"
+  summary-plural: "{count} confirmed dates must be a real date"
 - field: entry-date
   issue-type: missing value
   description: Entry date missing
