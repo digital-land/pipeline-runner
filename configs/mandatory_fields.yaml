@@ -1,5 +1,9 @@
 article-4-direction:
 - reference
+- name
+- description
+- document-url
+- documentation-url
 article-4-direction-area:
 - reference
 - geometry
@@ -9,6 +13,18 @@ conservation-area:
 - reference
 - geometry
 - name
+conservation-area-document:
+- reference
+- name
+- conservation-area
+- document-url
+- documentation-url
+- document-type
+tree-preservation-order:
+- reference
+- name
+- document-url
+- documentation-url
 tree-preservation-zone:
 - reference
 - geometry
