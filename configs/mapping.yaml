@@ -144,3 +144,33 @@ mappings:
   description: Geometry must be correctly formatted
   summary-singular: "1 geometry must be correctly formatted"
   summary-plural: "{count} geometries must be correctly formatted"
+- field: reference
+  issue-type: missing value
+  description: Reference missing
+  summary-singular: "1 reference missing"
+  summary-plural: "{count} references missing"
+- field: name
+  issue-type: missing value
+  description: Name missing
+  summary-singular: "1 name missing"
+  summary-plural: "{count} names missing"
+- field: description
+  issue-type: missing value
+  description: Description missing
+  summary-singular: "1 description missing"
+  summary-plural: "{count} descriptions missing"
+- field: permitted-development-rights
+  issue-type: missing value
+  description: Permitted development rights missing
+  summary-singular: "1 permitted development rights missing"
+  summary-plural: "{count} permitted development rights missing"
+- field: document-type
+  issue-type: missing value
+  description: Document type missing
+  summary-singular: "1 document type missing"
+  summary-plural: "{count} document types missing"
+- field: listed-building
+  issue-type: missing value
+  description: Listed building missing
+  summary-singular: "1 listed building missing"
+  summary-plural: "{count} listed buildings missing"

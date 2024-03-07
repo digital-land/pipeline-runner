@@ -207,10 +207,7 @@ def pipeline_run(
             issues=issue_log,
             patches=patches,
         ),
-        HarmonisePhase(
-            specification=specification,
-            issues=issue_log,
-        ),
+        HarmonisePhase(specification=specification, issues=issue_log, dataset=dataset),
         DefaultPhase(
             default_fields=default_fields,
             default_values=default_values,
