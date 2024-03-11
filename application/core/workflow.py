@@ -4,6 +4,7 @@ import urllib
 import yaml
 from urllib.error import HTTPError
 import shutil
+from application.core.utils import detect_encoding
 from application.logging.logger import get_logger
 from application.core.pipeline import fetch_response_data, resource_from_path
 from application.core.config import Directories, source_url
@@ -148,9 +149,11 @@ def csv_to_json(csv_file):
     json_data = []
 
     if os.path.isfile(csv_file):
+        # Detect .csv encoding
+        encoding = detect_encoding(csv_file)
         # Open the CSV file for reading
         try:
-            with open(csv_file, "r") as csv_input:
+            with open(csv_file, "r", encoding=encoding) as csv_input:
                 # Read the CSV data
                 csv_data = csv.DictReader(csv_input)
 
