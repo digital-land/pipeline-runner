@@ -3,6 +3,7 @@ import os
 import hashlib
 from application.core.config import Directories
 import requests
+from cchardet import UniversalDetector
 
 logger = get_logger(__name__)
 
@@ -85,3 +86,17 @@ def save(path, data):
         logger.info(path)
         with open(path, "wb") as f:
             f.write(data)
+
+
+def detect_encoding(path):
+    with open(path, "rb") as f:
+        detector = UniversalDetector()
+        detector.reset()
+
+        for line in f:
+            detector.feed(line)
+            if detector.done:
+                break
+        detector.close()
+
+        return detector.result["encoding"]
