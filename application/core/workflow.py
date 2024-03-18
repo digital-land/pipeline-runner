@@ -110,6 +110,7 @@ def fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource):
     pipeline_csvs = [
         "column.csv",
     ]
+    downloaded = False
     for pipeline_csv in pipeline_csvs:
         try:
             print(
@@ -119,6 +120,24 @@ def fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource):
                 f"{source_url}/{collection + '-collection'}/main/pipeline/{pipeline_csv}",
                 os.path.join(pipeline_dir, pipeline_csv),
             )
+            downloaded = True
+        except HTTPError as e:
+            logger.error(
+                f"Failed to retrieve pipeline CSV: {e}. Attempting to download from central config repository"
+            )
+            logger.info(
+                f"{source_url}/{'config'}/main/pipeline/{collection}/{pipeline_csv}"
+            )
+            try:
+                urllib.request.urlretrieve(
+                    f"{source_url}/{'config'}/main/pipeline/{collection}/{pipeline_csv}",
+                    os.path.join(pipeline_dir, pipeline_csv),
+                )
+                downloaded = True
+            except HTTPError as e:
+                logger.error(f"Failed to retrieve from config repository: {e}")
+
+        if downloaded:
             try:
                 if (
                     dataset == "tree"
@@ -132,8 +151,6 @@ def fetch_pipeline_csvs(collection, dataset, pipeline_dir, geom_type, resource):
                         csv_file.write("\n" + new_mapping)
             except Exception as e:
                 logger.error(f"Error saving new mapping: {e}")
-        except HTTPError as e:
-            logger.error(f"Failed to retrieve pipeline CSV: {e}")
 
 
 def clean_up(*directories):
