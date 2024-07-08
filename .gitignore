@@ -40,3 +40,6 @@ unit-tests.md
 build/*
 
 node_modules/*
+
+#config files
+specification/*
